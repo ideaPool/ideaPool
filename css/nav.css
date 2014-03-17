@@ -1,0 +1,87 @@
+/*********************************************************************************/
+/* Nav                                                                           */
+/*********************************************************************************/
+
+
+	#nav
+	{
+		background-color: rgba(255, 255, 255, 0.9);
+		font-family: "MontserratRegular";
+		text-align: left;
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		z-index: 10000;
+		cursor: default;
+		display:block;
+		border-bottom-style:solid;
+		border-color:#B8B8B8;
+		border-width:2px;
+	}
+	
+		#nav ul
+		{
+			margin-bottom: 1em;
+		}
+	
+		#nav li
+		{
+			display: inline-block;
+			margin-right: 1.3em;
+		}
+		
+		#nav a, #nav div
+		{
+			position: relative;
+			display: block;
+			color: #606060  ;
+			text-decoration: none;
+			outline: 0;
+			padding:0.2em;
+		}
+		
+			#nav a:hover, #nav div:hover
+			{
+				color: #F8F8F8    !important;
+				background-color:#707070 ;
+			}
+			
+			/*#nav a.active:before
+			{
+				content: '';
+				display: block;
+				position: absolute;
+				bottom: -0.6em;
+				left: 50%;
+				margin-left: -0.75em;
+				border-left: solid 0.75em transparent;
+				border-right: solid 0.75em transparent;
+				border-top: solid 0.6em #282828;
+			}*/
+/*************************************************
+*****************Search Bar**********************
+**************************************************/
+	#search{
+		float:right;
+	}
+	#tfheader{
+		right:8%;
+		top:1%;
+	}
+	#tfnewsearch{
+		float:right;
+	}
+	.tftextinput{
+		background-color:#D8D8D8 ;
+		color:black ;
+		margin: 0;
+		padding: 3px 10px;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size:10px;
+		border:0px solid #0076a3; border-right:0px;
+		border-top-left-radius: 5px 5px;
+		border-bottom-left-radius: 5px 5px;
+		border-top-right-radius: 5px 5px;
+		border-bottom-right-radius: 5px 5px;
+	}

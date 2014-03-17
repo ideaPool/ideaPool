@@ -1,0 +1,35 @@
+@charset "UTF-8";
+	
+body {
+	overflow-y: scroll;
+	font-size: 18px;
+	font-family: Arial,Helvetica,sans-serif,'Open Sans', sans-serif;
+	line-height: 1.85em;
+	color: #888;
+	font-weight: 300;
+}
+
+.image{
+	float: top;
+	width: 100%;
+    height: auto;
+}
+.container {
+	width: 80%;
+	height:100%;
+	padding-top:5em;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom:0;
+}
+#intro{
+	text-align:center;
+}
+strong{
+	font-size:1.5em;
+	font-weight:bold;
+	color:black;
+}
+.msg{
+	text-align:center;
+}
