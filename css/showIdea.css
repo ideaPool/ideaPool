@@ -1,35 +1,49 @@
 @charset "UTF-8";
 	
 body {
-	overflow-y: scroll;
 	font-size: 18px;
 	font-family: Arial,Helvetica,sans-serif,'Open Sans', sans-serif;
 	line-height: 1.85em;
 	color: #888;
 	font-weight: 300;
 }
-
-.image{
-	float: top;
-	width: 100%;
-    height: auto;
+.side-cover{
+	position:fixed;
+	background-color: rgba(255, 255, 255, 0.6);
+	z-index: 100;
+	top:15%;
+	height:85%;
+	width:10%;
 }
-.container {
-	width: 80%;
-	height:100%;
-	padding-top:5em;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom:0;
+.right{
+	right:0;
 }
-#intro{
-	text-align:center;
+.left{
+	left:0;
 }
-strong{
-	font-size:1.5em;
-	font-weight:bold;
-	color:black;
+.disp{
+	position: absolute;
+	top: 15%;
+	left:10%;
+	right:15%;
+	height:60%;
+	width:150%;
+	display:flex;
+	flex-wrap:wrap;
 }
-.msg{
-	text-align:center;
-}
+	.disp .ideaBlock{
+		float:left;
+		position:relative;
+		width:30%;
+		height:50%;
+		border-style: solid;
+		background-color: rgba(100%, 100%, 10%, 0.8);
+	}
+	.disp #b1{
+		width: 50%;
+		height: 70%;
+	}
+	.disp #b2{
+		width: 10%;
+		height: 20%;
+	}
