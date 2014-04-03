@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<title>Idea Pool</title>
+  	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link type="text/css" href="css/showIdea.css" rel="stylesheet" />
+	<link type="text/css" href="css/nav.css" rel="stylesheet" />
+	<script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
+	<script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/nav.js"></script>
+	<script type="text/javascript" src="js/login.js"></script>
+	<script type="text/javascript" src="js/drag.js"></script>
+    <script type="text/javascript" src="js/showIdea.js"></script>
+    
+</head>
+<body>
+	<!-- NAV -->
+	<nav id="nav">  
+		<ul>
+			<li><a href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
+			    <div id="mySpace" >
+        	        <dli><a href="#">My Ideas</a></dli>
+        	        <dli><a href="#">My Walls</a></dli>
+        	        <dli><a href="#" onclick="FBLogout();">Logout</a></dli>
+        	    </div>
+			</li>
+			<li><a href="#">Ideas</a></li>
+			<li><a href="#">Walls</a></li>
+			<li><a href="#" onclick="FBLogin();">Login</a></li>
+			<li id = "search">
+				<div id="tfheader" >
+					<input type="text" class="tftextinput" name="q" size="21" maxlength="120">
+					<i class="fa fa-search fa-fw"></i>
+				</div>
+			</li>
+		</ul>
+	</nav>
+	
+	<!-- display layer -->
+	<div class="right side-cover" onclick="nextBlock()" ></div>
+	<div class="left side-cover" onclick="preBlock()" ></div>
+	<i class="fa fa-angle-right fa-2x" id="click-r" style="position:fixed; top:47%; right:3%; "></i>
+	<i class="fa fa-angle-left fa-2x" id="click-l" style="position:fixed; top:47%; left:3%; display:none" ></i>
+	
+    <div class="droppable" id="drop"></div>
+    <div class="backGray" ></div>
+    
+	<div class="disp" id="disp" style="left:10%;">
+		<div class="one-page">
+		   <div class="ideaBlock float_l xl" id="b1_1" onmouseover="createLarge(this.id);" >
+			</div>
+			<div class="ideaBlock float_r m" id="b1_2" onmouseover="createLarge(this.id);" >
+				b
+			</div>
+			<div class="ideaBlock float_r s" id="b1_3" onmouseover="createLarge(this.id);">
+				c
+			</div>
+			<div class="ideaBlock float_l s" id="b1_4" onmouseover="createLarge(this.id);">
+				d
+			</div>
+			<div class="ideaBlock float_l s" id="b1_5" onmouseover="createLarge(this.id);">
+				e
+			</div>
+			<div class="ideaBlock float_l s" id="b1_6" onmouseover="createLarge(this.id);">
+				f
+			</div>
+			<div class="ideaBlock float_l s" id="b1_7" onmouseover="createLarge(this.id);">
+				g
+			</div>
+		</div>
+		<div class="one-page">
+			<div class="ideaBlock float_l s" id="b2_1" onmouseover="createLarge(this.id);">
+				a2
+			</div>
+			<div class="ideaBlock float_l l" id="b2_2" onmouseover="createLarge(this.id);">
+				b2
+			</div>
+			<div class="ideaBlock float_r s"  id="b2_3" onmouseover="createLarge(this.id);">
+				c2
+			</div>
+			<div class="ideaBlock float_l s" id="b2_4" onmouseover="createLarge(this.id);">
+				d2
+			</div>
+			<div class="ideaBlock float_l s" id="b2_5" onmouseover="createLarge(this.id);">
+				e2
+			</div>
+			<div class="ideaBlock float_r m" id="b2_6" onmouseover="createLarge(this.id);">
+				f2
+			</div>
+			<div class="ideaBlock float_r s" id="b2_7" onmouseover="createLarge(this.id);">
+				g2
+			</div>
+		</div>
+		<div class="one-page">
+			<div class="ideaBlock float_l l" id="b3_1" onmouseover="createLarge(this.id);">
+				a3
+			</div>
+			<div class="ideaBlock float_l m" id="b3_2" onmouseover="createLarge(this.id);">
+				b3
+			</div>
+			<div class="ideaBlock float_r s"  id="b3_3" onmouseover="createLarge(this.id);">
+				c3
+			</div>
+			<div class="ideaBlock float_l s" id="b3_4" onmouseover="createLarge(this.id);">
+				d3
+			</div>
+			<div class="ideaBlock float_r s" id="b3_5" onmouseover="createLarge(this.id);">
+				e3
+			</div>
+			<div class="ideaBlock float_r m" id="b3_6" onmouseover="createLarge(this.id);">
+				f3
+			</div>
+			<div class="ideaBlock float_l s" id="b3_7" onmouseover="createLarge(this.id);">
+				g3
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
+<script>
+    var ws;
+    function openSubmitWS(messageContainer) {
+        ws = new WebSocket("ws://ideapool.kd.io:8080/submitIdea");
+        ws.onmessage = function(e) {
+          var idea = JSON.parse(e.data);
+          fillIdeaBlock(idea.title, idea.description, idea.owner, idea.img);
+        };
+        ws.onclose = function(e) {
+          openSubmitWS(messageContainer);
+        }; 
+    }
+    function fillIdeaBlock(title, description, owner, img){
+        var ideaBlocks = document.getElementsByClassName("ideaBlock");
+        for(var i=0 ; i<ideaBlocks.length ; i++ ){
+            var dom_title = document.createElement("div");
+            dom_title.innerHTML = "title: " + title;
+            ideaBlocks[i].appendChild(dom_title); 
+            
+            var dom_description = document.createElement("div");
+            dom_description.innerHTML = "discription: <br>" + description;
+            ideaBlocks[i].appendChild(dom_description);
+            
+            var dom_owner = document.createElement("div");
+            dom_owner.innerHTML = "owner: " + owner;
+            ideaBlocks[i].appendChild(dom_owner);
+            
+            var dom_img = document.createElement("div");
+            dom_img.src = img;
+            dom_img.style.zIndex = '0';
+            dom_img.style.position = "absolute";
+            dom_img.style.top = "0";
+            dom_img.style.left = '0'; 
+            dom_img.style.maxWidth = '100%';
+            dom_img.style.maxHeight = '100%';
+            dom_img.style.backgroundImage = "url("+ img + ")";
+            dom_img.style.backgroundRepeat = "no-repeat";
+            dom_img.style.backgroundSize = "cover";
+            //document.body.appendChild(dom_img);
+            ideaBlocks[i].appendChild(dom_img);
+            /*
+            ideaBlocks[i].style.backgroundImage = "url("+ img + ")";
+            ideaBlocks[i].style.backgroundSize = "cover";
+            ideaBlocks[i].style.backgroundRepeat = "no-repeat";
+            */
+        }
+    }
+    window.onload = function() {
+        var messageContainer = document.getElementById("body");
+        if("WebSocket" in window) {
+            console.log("browser support!");
+            openSubmitWS(messageContainer);
+        }
+        else {
+          console.log("browser don't support!");
+        }
+    }
+</script>
+

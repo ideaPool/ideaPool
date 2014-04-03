@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<title>Idea Pool</title>
+  	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link type="text/css" href="css/login.css" rel="stylesheet" />
+	<link type="text/css" href="css/nav.css" rel="stylesheet" />
+	<script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/nav.js"></script>
+    
+</head>
+<body>
+	<!-- NAV -->
+	<nav id="nav"> 
+		<ul>
+			<li><a href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
+			    <div id="mySpace" >
+        	        <dli><a href="#">My Ideas</a></dli>
+        	        <dli><a href="#">My Walls</a></dli>
+        	        <dli><a href="#">Logout</a></dli>
+        	    </div>
+			</li>
+			<li><a href="#">Ideas</a></li>
+			<li><a href="#">Walls</a></li>
+			<li id = "search">
+				<div id="tfheader" >
+					<input type="text" class="tftextinput" name="q" size="21" maxlength="120">
+					<i class="fa fa-search fa-fw"></i>
+				</div>
+			</li>
+		</ul>
+	</nav>
+	
+	<!--- Login --->
+	<div id="login">
+		Idea Pool !
+		<div>
+			Set User ID &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp: 
+			<input name="uid" type="text" size="12" maxlength="12" />
+		</div>
+		<div>
+			Set Password  &nbsp  &nbsp  &nbsp  &nbsp :
+			<input name="pswrd" type="password" size="12" maxlength="12"/>
+		</div>
+		<div>
+			Recheck Password :
+			<input name="pswrd" type="password" size="12" maxlength="12"/>
+		</div>
+		<div>
+		    <input name="sbm" type="button" value="regist"/>
+		</div>
+	</div>
+	
+</body>
+</html>

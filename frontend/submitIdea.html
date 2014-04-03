@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript">
+      var ws;
+      
+      function createIdeaEntry(owner, title, description, img) {
+        var entry = document.createElement("div");
+        entry.class = "idea_entry";
+        
+        var dom_uname = document.createElement("span");
+        dom_uname.class = "idea_owner";
+        dom_uname.innerHTML = owner+": ";
+        entry.appendChild(dom_uname);
+        
+        var dom_title = document.createElement("span");
+        dom_title.class = "idea_title";
+        dom_title.innerHTML = "<br>" + title + " XD! ";
+        entry.appendChild(dom_title);
+        
+        var dom_msg = document.createElement("span");
+        dom_msg.class = "idea_description";
+        dom_msg.innerHTML = "<br>" + description;
+        entry.appendChild(dom_msg);
+        
+        var dom_img = document.createElement("span");
+        dom_img.class = "idea_img";
+        dom_img.innerHTML = "<img src = " + img + " />";
+        entry.appendChild(dom_img);
+        
+        return entry;
+      }
+      
+      function openWS(messageContainer) {
+        ws = new WebSocket("ws://ideapool.kd.io:8080/submitIdea");
+        ws.onmessage = function(e) {
+          var data = JSON.parse(e.data);
+          messageContainer.appendChild(createIdeaEntry(data.owner, data.title, data.description, data.img));
+        };
+        ws.onclose = function(e) {
+          openWS(messageContainer);
+        };
+      }
+      
+      function sendMessage() {
+         
+        var file = document.getElementById("img").files[0];
+
+        var reader = new FileReader();
+        // Sends the result of the file read as soon as the reader has
+        // completed reading the image file.
+        reader.onloadend = function(){
+                   data = { title: document.getElementById("title").value,
+                     description: document.getElementById("description").value,
+                     owner: document.getElementById("owner").value,
+                     img: reader.result
+                    };
+                    if(data.title && data.description && data.owner ) {
+                      ws.send(JSON.stringify(data));
+                    }
+        };
+        // Make sure the file exists and is an image
+        if(file && file.type.match("image")){
+            reader.readAsDataURL(file);
+        }
+        
+      }
+      
+      window.onload = function() {
+        var messageContainer = document.getElementById("chat");
+        if("WebSocket" in window) {
+          messageContainer.appendChild(createIdeaEntry("[SYSTEM]", "WebSocket is supported by your browser!"));
+          messageContainer.appendChild(createIdeaEntry("[SYSTEM]", "Pick a username and start sending out messages."));
+          openWS(messageContainer);
+        }
+        else {
+          messageContainer.appendChild(createIdeaEntry("[SYSTEM]", "WebSocket is NOT supported by your browser!"));
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chat" style="width: 100%; height: 15em; overflow: scroll; font-family: Arial"></div>
+    <div id="input_area">
+      <input id="owner" type="text" placeholder="Your name" style="display: block; width: 200px"></input>
+      <input id="title" type="text" placeholder="Your idea title" style="display: block; width: 200px"></input>
+      <textarea id="description" placeholder="Your idea description" style="display: block; width: 400px"></textarea>
+      <input id="img" type="file" placeholder="choose a pic" style="display:block; width:200px" />
+      <button onclick="sendMessage()" style="display: block">Send</button>
+    </div>
+  </body>
+</html>
