@@ -12,7 +12,6 @@
     <script src="js/jquery-ui.js"></script>
 	<script type="text/javascript" src="js/nav.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
-	<script type="text/javascript" src="js/drag.js"></script>
     <script type="text/javascript" src="js/showIdea.js"></script>
     
 </head>
@@ -149,24 +148,35 @@
             dom_owner.innerHTML = "owner: " + owner;
             ideaBlocks[i].appendChild(dom_owner);
             
-            var dom_img = document.createElement("div");
+            var dom_img = document.createElement("img");
+            var el = document.getElementById(ideaBlocks[i].id);
+            var w = '100%';
+            var h = '100%';
             dom_img.src = img;
-            dom_img.style.zIndex = '0';
+            dom_img.style.zIndex = -100;
             dom_img.style.position = "absolute";
             dom_img.style.top = "0";
             dom_img.style.left = '0'; 
-            dom_img.style.maxWidth = '100%';
-            dom_img.style.maxHeight = '100%';
-            dom_img.style.backgroundImage = "url("+ img + ")";
-            dom_img.style.backgroundRepeat = "no-repeat";
-            dom_img.style.backgroundSize = "cover";
-            //document.body.appendChild(dom_img);
+            dom_img.style.width = w;
+            dom_img.style.height = h;
+            //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
             ideaBlocks[i].appendChild(dom_img);
-            /*
-            ideaBlocks[i].style.backgroundImage = "url("+ img + ")";
-            ideaBlocks[i].style.backgroundSize = "cover";
-            ideaBlocks[i].style.backgroundRepeat = "no-repeat";
-            */
+            
+            var dom_filter = document.createElement("img");
+            var el = document.getElementById(ideaBlocks[i].id);
+            var w = '100%';
+            var h = '100%';
+            dom_filter.style.zIndex = -99;
+            dom_filter.style.position = "absolute";
+            dom_filter.style.top = "0";
+            dom_filter.style.left = '0'; 
+            dom_filter.style.width = w;
+            dom_filter.style.height = h;
+            dom_filter.style.background = 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%)';
+            //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+            ideaBlocks[i].appendChild(dom_filter);
+            
+            ideaBlocks[i].onmousedown = "createSmallImg("+ideaBlocks[i].id+","+img+")";
         }
     }
     window.onload = function() {

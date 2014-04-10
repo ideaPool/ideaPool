@@ -6,12 +6,13 @@ DB_USER = "root"
 DB_PASSWD = "ideaPool"
 DB_CHOSEN = "ideaPool"
 
+
 # connect
-def getDbConnection():
-    db = pw.MySQLDatabase(DB_CHOSEN,  user= DB_USER , passwd= DB_PASSWD)
-    db.connect
-    return db
+myDb = pw.MySQLDatabase(DB_CHOSEN, host=DB_LOCATE,  user= DB_USER , passwd= DB_PASSWD)
+myDb.connect()
+
 
 class MySQLModel(pw.Model):
     class Meta:
-        database = db
+        database = myDb
+        
