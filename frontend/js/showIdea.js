@@ -1,3 +1,153 @@
+var ws;
+var currentPageIdeas = null;
+var currentDragId = null;
+window.onload = function() {
+    openWS();
+}
+function openWS(){
+    if("WebSocket" in window) {
+        console.log("browser support!");
+        openShowIdeaWS();
+        openBufferWS();
+    }
+    else {
+      console.log("browser don't support!");
+    }
+}
+function openShowIdeaWS() {
+    ws = new WebSocket("ws://ideapool.kd.io:8080/showIdea");
+    ws.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        if(data.tar == "connectSuccess"){
+            console.log("connection build!");
+            loadInfo();
+        }
+        else if(data.tar == "sendIdea"){
+            currentPageIdeas = data.ideas;
+            for(var i in data.ideas){
+                var id = "idea_"+i.toString();
+                fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
+            }
+        }
+    }; 
+    ws.onclose = function(e) {
+        openShowIdeaWS();
+    }; 
+}
+function loadInfo(){
+    var data = {
+        tar : "loadInfo"
+    };
+    ws.send(JSON.stringify(data));
+}
+
+function fillIdeaBlock(title, description, owner, img){
+    var ideaBlocks = document.getElementsByClassName("ideaBlock");
+    $(ideaBlocks).empty();/*clear inside things*/
+    for(var i=0 ; i<ideaBlocks.length ; i++ ){
+        var dom_title = document.createElement("div");
+        dom_title.innerHTML = title;
+        dom_title.className = "title";
+        ideaBlocks[i].appendChild(dom_title); 
+        
+        var dom_owner = document.createElement("div");
+        dom_owner.className = "owner";
+        dom_owner.innerHTML = owner;
+        ideaBlocks[i].appendChild(dom_owner);
+        
+        var dom_description = document.createElement("div");
+        dom_description.className = "description";
+        dom_description.innerHTML = description;
+        dom_description.style.display = "none";
+        ideaBlocks[i].appendChild(dom_description);
+        
+        
+        var dom_img = document.createElement("img");
+        var el = document.getElementById(ideaBlocks[i].id);
+        var w = '100%';
+        var h = '100%';
+        dom_img.src = img;
+        dom_img.style.zIndex = -100;
+        dom_img.style.position = "absolute";
+        dom_img.style.top = "0";
+        dom_img.style.left = '0'; 
+        dom_img.style.width = w;
+        dom_img.style.height = h;
+        //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+        ideaBlocks[i].appendChild(dom_img);
+        
+        var dom_filter = document.createElement("img");
+        el = document.getElementById(ideaBlocks[i].id);
+        w = '100%';
+        h = '100%';
+        dom_filter.style.zIndex = -99;
+        dom_filter.style.position = "absolute";
+        dom_filter.style.top = "0";
+        dom_filter.style.left = '0'; 
+        dom_filter.style.width = w;
+        dom_filter.style.height = h;
+        dom_filter.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%)";
+        //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+        ideaBlocks[i].appendChild(dom_filter);
+        
+        //ideaBlocks[i].onmousedown = "createSmallImg("+ideaBlocks[i].id+","+img+")";
+    }
+}
+
+function fillIdeaBlock(title, description, owner, img, id){
+    var ideaBlock = document.getElementById(id);
+    console.log(id);
+    $(ideaBlock).empty();/*clear inside things*/
+    
+    var dom_title = document.createElement("div");
+    dom_title.innerHTML = title;
+    dom_title.className = "title";
+    ideaBlock.appendChild(dom_title); 
+    
+    var dom_owner = document.createElement("div");
+    dom_owner.className = "owner";
+    dom_owner.innerHTML = owner;
+    ideaBlock.appendChild(dom_owner);
+    
+    var dom_description = document.createElement("div");
+    dom_description.className = "description";
+    dom_description.innerHTML = description;
+    dom_description.style.display = "none";
+    ideaBlock.appendChild(dom_description);
+    
+    
+    var dom_img = document.createElement("img");
+    var el = ideaBlock;
+    var w = '100%';
+    var h = '100%';
+    dom_img.src = img;
+    dom_img.style.zIndex = -100;
+    dom_img.style.position = "absolute";
+    dom_img.style.top = "0";
+    dom_img.style.left = '0'; 
+    dom_img.style.width = w;
+    dom_img.style.height = h;
+    //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+    ideaBlock.appendChild(dom_img);
+    
+    var dom_filter = document.createElement("img");
+    w = '100%';
+    h = '100%';
+    dom_filter.style.zIndex = -99;
+    dom_filter.style.position = "absolute";
+    dom_filter.style.top = "0";
+    dom_filter.style.left = '0'; 
+    dom_filter.style.width = w;
+    dom_filter.style.height = h;
+    dom_filter.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%)";
+    //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+    ideaBlock.appendChild(dom_filter);
+    
+    //ideaBlocks[i].onmousedown = "createSmallImg("+ideaBlocks[i].id+","+img+")";
+    
+}
+
+
 var changeBlockEnable = 1;
 function nextBlock()
 {
@@ -66,7 +216,9 @@ function createLarge(id)
     if(enableCreateLarge==1){
         divL = createLargeDiv(id);
         enLargeChildImg(divL);
+        $(divL).children().css("display", "block");
         makeDraggable();
+        currentDragId = id;
     }
 }
 function enLargeChildImg(divL)
@@ -119,23 +271,13 @@ function createSmallImg(id, img)
 } 
 /* draggable */
 $( document ).ready(makeDraggable());
-function getDragImg(clickedObj)
-{
-    var obj = $(clickedObj);
-    var img = obj.find('img');
-    console.log("get Small Img");
-    console.log(img.get(0));
-    if(img!== null &&  img!== undefined)
-        return $(img.get(0));
-    else return $(clickedObj);
-}
 function makeDraggable()
 {
     var onMouseOut;
     $( ".draggable" ).draggable({
       helper: function() {
         //debugger;
-        var tmp =  $(this).find('img').clone();
+        var tmp =  $(this).parent().find('img').clone();
         $(tmp.get(0)).css('z-index', '10000');
         $(tmp.get(1)).css('z-index', '10005');
         tmp.css('width', '160px');
@@ -146,26 +288,28 @@ function makeDraggable()
       cursor: "move",
       cursorAt: { top: 30, left: 30 },
       start: function(){
-          getDragImg(this);
-          $('.backGray').css('display', 'block');
-          $('.droppable').css('display', 'block');
-          onMouseOut = $('.draggable').attr('onmouseout');
-          $('.draggable').attr('onmouseout', ''); 
+            $('.backGray').css('display', 'block');
+            $('.droppable').css('display', 'block');
+            onMouseOut = $('.draggable').attr('onmouseout');
+            $('.draggable').attr('onmouseout', '');
       },
       drag: function(){
       },
       stop: function(){
-          $('.draggable').attr('onmouseout', onMouseOut);
-          $('.backGray').css('display', 'none');
-          $('.droppable').css('display', 'none');
+            $('.draggable').attr('onmouseout', onMouseOut);
+            $('.backGray').css('display', 'none');
+            $('.droppable').css('display', 'none');
       }
     });
     $('.droppable').droppable({
         drop: function(){
-            //alert($('.ui-draggable-dragging').get(0));
             alert('Dropped!');
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.droppable').css('display', 'none');
+            if(currentDragId!=null){
+                bufferIdea(currentDragId);
+            }
+            currentDragId = null;
         }
     });
 }
