@@ -1,47 +1,99 @@
-function goToByScroll(id){
-  $(window).unbind('scroll');
-  disableScroll();
-  console.log('goToByScroll '+id+': '+$("#"+id).offset().top);
-  $('html,body').animate({scrollTop: $("#"+id).offset().top}, 'slow');
+window.onload = function()
+{
+    BUFF_VIEW_ID = "wallBuffer";/*set buff.js global variable*/
+    openWS();
+    checkLogin(); /* in login.js*/ 
 }
 
-var lastWall;
+function openWS(){
+    if("WebSocket" in window) {
+        console.log("browser support!");
+        openBufferWS();
+    }
+    else {
+      console.log("browser don't support!");
+    }
+}
+
+// var scrollEnable = 1;
+function goToByScroll(id){
+  // $(window).unbind('scroll');
+  // disableScroll();
+// if(scrollEnable){
+  // scrollEnable = 0;
+  console.log('  Scroll to '+id);
+  console.log('  goToByScroll '+id+': '+$("#"+id).offset().top+', cur: '+$('body').scrollTop());
+  $('body').animate({scrollTop: $("#"+id).offset().top}, 1000, function(){
+    // console.log('  ***** scroll done, cnt: '+cnt+', lastTop: '+lastTop+', cur: '+$('body').scrollTop()+' *****');
+    // if(cnt<6){
+    setTimeout(function(){$(window).bind('scroll', autoScroll);}, 100);
+    setTimeout(enableScroll, 100);
+    // scrollEnable = 1;
+    // lastTop = $('body').scrollTop();
+    // }
+  });
+// }
+}
+
+// var lastTop;
 var wallIds = [];
 $(document).ready(function(){
   $('.wallBlockContainer').each(function(n){
     wallIds[n] = $(this).attr('id');
     console.log('wallIds['+n+'] = '+ wallIds[n]);
   })
-  lastWall = 0;
+  $(window).unbind('scroll');
+  disableScroll();
+  goToByScroll(wallIds[0]);
 });
 
 var cnt = 0;
-$(window).bind('scroll', autoScroll);
+$(document).ready(function(){
+  $(window).bind('scroll', autoScroll);
+});
 function autoScroll(){
   $(window).unbind('scroll');
   disableScroll();
   ++cnt;
-  var lastTop = $('.wallBlockContainer').eq(lastWall).offset().top;
   var curTop = $(this).scrollTop();
+  var nearestWall;
+  var nearestDist = 100000000;
+  $('.wallBlockContainer').each(function(n){
+    if(nearestDist > Math.abs($(this).offset().top - curTop)){
+      nearestDist = Math.abs($(this).offset().top - curTop);
+      nearestWall = n;
+    }
+  });
+  var lastTop;
+  lastTop = $('#'+wallIds[nearestWall]).offset().top;
   console.log(curTop, lastTop);
-  if(/* lastWall>0 &&  */curTop+20<lastTop){
-    goToByScroll(wallIds[lastWall-1]);
-    --lastWall;
-  }else if(/* lastWall<wallIds.length-1 &&  */curTop-20>lastTop){
-    goToByScroll(wallIds[lastWall+1]);
-    ++lastWall;
+  console.log('nearestWall = wb'+(nearestWall+1)+', last = '+lastTop+', cur = '+curTop);
+  if(curTop<lastTop){
+    if(nearestWall>0){
+      console.log('Scroll up');
+      goToByScroll(wallIds[nearestWall-1]);
+    }else{
+      goToByScroll(wallIds[0]);
+    }
+  }else if(curTop>lastTop){
+    if(nearestWall<wallIds.length-1){
+      console.log('Scroll down');
+      goToByScroll(wallIds[nearestWall+1]);
+    }else{
+      goToByScroll(wallIds[wallIds.length-1]);
+    }
+  }else{
+    goToByScroll(wallIds[nearestWall]);
   }
-  setTimeout(function(){$(window).bind('scroll', autoScroll)}, 1500);
-  setTimeout(enableScroll, 1500);
-  console.log('lastWall = wb' + (lastWall+1));
 }
 
-var directionKeys = [37, 38, 39, 40];
+var directionKeys = [33, 34, 35, 36, 37, 38, 39, 40];
 function preventDefault(e) {
   e = e || window.event;
   if (e.preventDefault)
     e.preventDefault();
-  e.returnValue = false;  
+  else
+    e.returnValue = false;  
 }
 function disableKeydown(e) {
   for (var i = directionKeys.length-1; i>=0; --i) {

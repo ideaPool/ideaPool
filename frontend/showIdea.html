@@ -7,17 +7,18 @@
   	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 	<link type="text/css" href="css/showIdea.css" rel="stylesheet" />
 	<link type="text/css" href="css/nav.css" rel="stylesheet" />
+	<link type="text/css" href="css/loader.css" rel="stylesheet" />
 	<script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
 	<script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/jquery-ui.js"></script>
 	<script type="text/javascript" src="js/nav.js"></script>
+	<script type="text/javascript" src="js/loader.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
 	<script type="text/javascript" src="js/buffer.js"></script>
     <script type="text/javascript" src="js/showIdea.js"></script>
-    
 </head>
 <body>
-	<!-- NAV -->
+	<!-- NAV --->
 	<nav id="nav">  
 		<ul>
 			<li><a href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
@@ -27,8 +28,8 @@
         	        <dli><a href="#" onclick="FBLogout();">Logout</a></dli>
         	    </div>
 			</li>
-			<li><a href="#">Ideas</a></li>
-			<li><a href="#">Walls</a></li>
+			<li><a href="showIdea.html">Ideas</a></li>
+			<li><a href="showWall.html">Walls</a></li>
 			<li><a href="#" onclick="FBLogin();">Login</a></li>
 			<li id = "search">
 				<div id="tfheader" >
@@ -38,16 +39,19 @@
 			</li>
 		</ul>
 	</nav>
-	
+
 	<!-- display layer -->
 	<div class="right side-cover" onclick="nextBlock()" ></div>
 	<div class="left side-cover" onclick="preBlock()" ></div>
 	<i class="fa fa-angle-right fa-2x" id="click-r" style="position:fixed; top:47%; right:3%; z-index:99"></i>
 	<i class="fa fa-angle-left fa-2x" id="click-l" style="position:fixed; top:47%; left:3%; z-index:99; display:none" ></i>
 	
-    <div class="droppable" id="drop"></div>
-    <div class="backGray" ></div>
-    
+    <div class="droppable" id="droppable">
+        <p style="text-align:center;"> Drag Idea Here!! </p>
+    </div>
+    <div id="buff">Buffer:</div>
+    <div class="backGray" style="font-size:10em; text-align:right;vertical-align: middle; line-height: 90px; "> <h style="z-index:1000005; right:15%; top:40%; position:fixed;">--------></h></div>
+    <div class="backWhite" onclick="hideBuff()"></div>
 	<div class="disp" id="disp" style="left:10%;">
 		<div class="one-page">
 		   <!--div class="ideaBlock float_l xl" id="b1_1" onmouseover="createLarge(this.id);" >
@@ -119,5 +123,34 @@
 			</div>
 		</div>
 	</div>
+	
+	<!--- loading animation --->
+	<div class = "loader">
+    	<div class="windows8">
+    	    <h>LOADING...</h>
+    	    <br><br>
+            <div class="wBall" id="wBall_1">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_2">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_3">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_4">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_5">
+                <div class="wInnerBall"></div>
+            </div>
+        </div> 
+	</div>
+	
+	<!--- Buffer Icon --->
+	<div id="buffIcon" class="buffIcon" onclick="clickBuffIcon()">
+	    <h style="position:absolute; left:15%; top: 20%;">Buff</h>
+	</div>
+	
 </body>
 </html>

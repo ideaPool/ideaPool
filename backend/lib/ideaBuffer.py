@@ -1,5 +1,6 @@
 import database as db
 import peewee as pw
+import idea as IDEA
 
 class ideabuffer(db.MySQLModel):
     id = pw.PrimaryKeyField()
@@ -12,3 +13,12 @@ def add(ideaId, userId):
     except ideabuffer.DoesNotExist:
         idea = ideabuffer.create(userId=userId, ideaId=ideaId)
         idea.save() 
+
+def getAllBuff(userId):
+    buffQuery = ideabuffer.select().where(ideabuffer.userId == userId ).order_by(ideabuffer.id.desc())
+    buffList = []
+    cnt = 0
+    for i in buffQuery:
+        idea = IDEA.getIdeaById(i.ideaId)
+        buffList.append(idea)
+    return buffList

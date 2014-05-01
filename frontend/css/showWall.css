@@ -3,10 +3,11 @@ html{
 }
 body {
   font-size: 18px;
-	font-family: Arial,Helvetica,sans-serif,'Open Sans', sans-serif;
-	line-height: 1.85em;
-	color: #888;
-	font-weight: 300;
+  font-family: Arial,Helvetica,sans-serif,'Open Sans', sans-serif;
+  line-height: 1.85em;
+  color: #888;
+  font-weight: 300;
+  overflow-x: hidden;
 }
 .backGray{
     position:fixed;
@@ -33,7 +34,7 @@ body {
 #wallNav{
   position: fixed;
   top: 10%;
-  width: 15%;
+  width: 12%;
   height: 89%;
   background-color: blue;
   opacity: 0.5;
@@ -64,11 +65,27 @@ body {
   position: fixed;
   right: 0%;
   top: 10%;
-  width: 15%;
+  width: 12%;
   height: 89%;
   background-color: blue;
   opacity: 0.5;
-};
+}
+
+    #wallBuffer .buffView{
+        width:90%;
+        height:15%;
+        padding:5%;
+    }
+        #wallBuffer .buffView .title{
+            font-size:1.3em;
+            color:black;
+            z-index:100005;
+        }
+        #wallBuffer .buffView img{
+            width:90%;
+            height:80%;
+            z-index:100005;
+        }
 
 #wallDisp{
 	position: absolute;
@@ -80,16 +97,16 @@ body {
 }
 .wallBlockContainer{
   position: absolute;
-  width: 99%;
+  width: 100%;
   height: 100%;
   z-index: -1;
 }
 .wallBlock{
   position: relative;
-  top: 15%;
-  left: 20%;
-	width: 60%;
-  height: 80%;
+  top: 10%;
+  left: 12%;
+  width: 75.5%;
+  height: 89%;
   background-color: rgba(100%, 100%, 10%, 0.8);
 }
 #wb1{

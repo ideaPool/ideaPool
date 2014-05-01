@@ -3,12 +3,17 @@ import peewee as pw
 
 IMG_DIR = "../ideaPoolData/ideaImg/"
 NUM_OF_BLOCKS = 21
+
 class ideas(db.MySQLModel):
     id = pw.PrimaryKeyField()
     title = pw.CharField()
     description = pw.TextField()
     owner = pw.CharField()
     img = pw.CharField()
+
+def getIdeaById(ideaId):
+    idea = ideas.get(ideas.id == ideaId)
+    return idea
 
 def createIdeaMsg(idea):
     msg = {'id':idea.id, 'title':idea.title, 'description':idea.description, 'owner':idea.owner, 'img':""}
@@ -21,9 +26,9 @@ def getLatestIdeas():
     ideaList = []
     cnt = 0
     for idea in ideaQuery:
-        ideaList.append(idea)
         if cnt >= NUM_OF_BLOCKS:
             break
+        ideaList.append(idea)
         cnt+=1
     return ideaList
 

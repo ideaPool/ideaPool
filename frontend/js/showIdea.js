@@ -2,13 +2,16 @@ var ws;
 var currentPageIdeas = null;
 var currentDragId = null;
 window.onload = function() {
+    BUFF_VIEW_ID = "buff"; /*set buff.js global variable*/
     openWS();
+    checkLogin(); /* in login.js*/ 
 }
 function openWS(){
     if("WebSocket" in window) {
         console.log("browser support!");
-        openShowIdeaWS();
         openBufferWS();
+        openShowIdeaWS();
+        openLoginWS();
     }
     else {
       console.log("browser don't support!");
@@ -16,18 +19,21 @@ function openWS(){
 }
 function openShowIdeaWS() {
     ws = new WebSocket("ws://ideapool.kd.io:8080/showIdea");
+    ws.onopen = function(e){
+        console.log("success connected to /idea");
+        loadInfo();
+    }
     ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        if(data.tar == "connectSuccess"){
-            console.log("connection build!");
-            loadInfo();
-        }
-        else if(data.tar == "sendIdea"){
-            currentPageIdeas = data.ideas;
+        
+        if(data.tar == "sendIdea"){
+            currentPageIdeas = data.ideas; /* set a global var to be used in afterward times*/
             for(var i in data.ideas){
                 var id = "idea_"+i.toString();
                 fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
             }
+            closeLoadingIcon()
+            //setTimeout(closeLoadingIcon(), 200); /* in loader.js*/
         }
     }; 
     ws.onclose = function(e) {
@@ -257,8 +263,6 @@ function createSmallImg(id, img)
 {
     var dom_img = document.createElement("img");
     var el = document.getElementById(id);
-    var w = el.offsetWidth;
-    var h = el.offsetHeight;
     dom_img.src = img;
     dom_img.style.zIndex = 100;
     dom_img.style.position = "absolute";
@@ -278,10 +282,11 @@ function makeDraggable()
       helper: function() {
         //debugger;
         var tmp =  $(this).parent().find('img').clone();
-        $(tmp.get(0)).css('z-index', '10000');
-        $(tmp.get(1)).css('z-index', '10005');
+        $(tmp.get(0)).css('z-index', '1010');
+        $(tmp.get(1)).css('z-index', '1011');
         tmp.css('width', '160px');
         tmp.css('height', '120px');
+        tmp.attr('class', tmp.attr('class')+'toDrag')
         return $("<div></div>").append(tmp);
       },
       revert: "invalid",
@@ -292,6 +297,7 @@ function makeDraggable()
             $('.droppable').css('display', 'block');
             onMouseOut = $('.draggable').attr('onmouseout');
             $('.draggable').attr('onmouseout', '');
+            $('#buffIcon').css('display', 'none');
       },
       drag: function(){
       },
@@ -299,6 +305,7 @@ function makeDraggable()
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.backGray').css('display', 'none');
             $('.droppable').css('display', 'none');
+            $('#buffIcon').css('display', 'block');
       }
     });
     $('.droppable').droppable({
@@ -306,10 +313,50 @@ function makeDraggable()
             alert('Dropped!');
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.droppable').css('display', 'none');
-            if(currentDragId!=null){
-                bufferIdea(currentDragId);
+            if(currentDragId!==null){
+                bufferIdea(currentDragId); /* this function is in buffer.js*/
             }
             currentDragId = null;
         }
     });
 }
+var isBuffShow = 0;
+var isDrag = 0;
+function clickBuffIcon()
+{
+    if(isBuffShow)
+        hideBuff();
+    else
+        showBuff();
+}
+function showBuff()
+{
+    if(!isDrag){
+        $('#buff').css('display', 'block');
+        $('.backWhite').css('display', 'block');
+        isBuffShow = 1;
+    }
+}
+function hideBuff()
+{
+    $('#buff').css('display', 'none');
+    $('.backWhite').css('display', 'none');
+    isBuffShow = 0;
+}
+/* make buff icon draggable*/
+$(function() {
+    var tmpOnclick;
+    $( "#buffIcon" ).draggable({
+        start: function(event, ui){
+           isDrag = 1;
+        },
+        drag: function(){
+            
+        },
+        stop: function(event, ui){
+            setTimeout(function(){isDrag=0;}, 300);
+        } 
+    });
+});
+  
+  

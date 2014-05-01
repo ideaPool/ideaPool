@@ -80,20 +80,19 @@ class WebSocketBufferHandler(tornado.websocket.WebSocketHandler):
         msg = json.loads(message)
         tar = msg['tar']
         if tar == "loadBuffer" :
-            pass
+            user = LOGIN.getFbUserInfo(msg['accessToken'])
+            buffList = IDEA_BUFFER.getAllBuff(user['id'])
+            msg = {'tar':"sendBuff", 'buff':[]}
+            for idea in buffList:
+                msg['buff'].append(IDEA.createIdeaMsg(idea))
+            self.write_message(json.dumps(msg))
         elif tar == "bufferIdea":
-            print "get buffer idea req"
-            self.bufferIdea(msg['ideaId'], msg['userId'])
+            user = LOGIN.getFbUserInfo(msg['accessToken'])
+            IDEA_BUFFER.add(msg['ideaId'], user['id']) 
             
     def on_close(self):
         pass
     
-    def bufferIdea(self, ideaId, userId):
-        print "add buffer!"
-        IDEA_BUFFER.add(ideaId, userId)
-    def getBufferIdeas(self):
-        allBuffIdeas = IDEA_BUFFER.getAll()
-        return allBuffIdeas
     
 class WebSocketLoginHandler(tornado.websocket.WebSocketHandler):
     def open(self, *args):
@@ -105,13 +104,11 @@ class WebSocketLoginHandler(tornado.websocket.WebSocketHandler):
         msg = json.loads(message)
         tar = msg['tar']
         if tar == "userLogin" :
-            self.checkAndSaveUser(msg)
+            LOGIN.userLogin(msg)
         
     def on_close(self):
         pass
-    def checkAndSaveUser(self, msg):
-        print "check and save user!"
-        LOGIN.checkAndSaveUser(msg);
+
      
 app = tornado.web.Application(
 	[
@@ -123,6 +120,7 @@ app = tornado.web.Application(
 	],
 	debug=True,
 )
+
 
 app.listen(8080)
 tornado.ioloop.IOLoop.instance().start()
