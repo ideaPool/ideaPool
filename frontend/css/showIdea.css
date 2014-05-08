@@ -58,8 +58,27 @@ body {
     color: #383838  ;
     z-index:1005;
 }
+
+.moveLeftToRight{
+    z-index:10000 !important;
+    -webkit-animation: moveLeftToRight 3s; /* Chrome, Safari, Opera */
+    animation: moveLeftToRight 3s;
+}
+ /* Chrome, Safari, Opera */
+@-webkit-keyframes moveLeftToRight
+{
+0% {right: 95%;}
+100% {right:15%;}
+}
+
+/* Standard syntax */
+@keyframes moveLeftToRight
+{
+0% {right: 95%;}
+100% {right:15%; }
+}
 #buff{
-    overflow:auto;
+    overflow:scroll;
     background-color:rgba(13%, 20%, 10%, 0.8);
     display:none;
     position:fixed;
@@ -83,10 +102,23 @@ body {
         }
         #buff .buffView img{
             width:90%;
-            height:80%;
+            height:20%;
             z-index:100005;
         }
-        
+.jspTrack
+{
+    background: #C0C0C0  !important; 
+    position: relative;
+}
+ 
+.jspDrag
+{
+    background: #787878 !important; 
+    position: relative;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}        
 #buffIcon{
     position: absolute;
     opacity:0.9;

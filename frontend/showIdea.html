@@ -5,12 +5,14 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 	<title>Idea Pool</title>
   	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  	<link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css" /> 
 	<link type="text/css" href="css/showIdea.css" rel="stylesheet" />
 	<link type="text/css" href="css/nav.css" rel="stylesheet" />
 	<link type="text/css" href="css/loader.css" rel="stylesheet" />
 	<script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
 	<script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
 	<script type="text/javascript" src="js/nav.js"></script>
 	<script type="text/javascript" src="js/loader.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
@@ -47,10 +49,12 @@
 	<i class="fa fa-angle-left fa-2x" id="click-l" style="position:fixed; top:47%; left:3%; z-index:99; display:none" ></i>
 	
     <div class="droppable" id="droppable">
-        <p style="text-align:center;"> Drag Idea Here!! </p>
+        <p style="text-align:center; position:fixed; top:45%; right:2%; max-width:15%; font-size:1.3em;" > Drag Idea Here!! </p>
     </div>
-    <div id="buff">Buffer:</div>
-    <div class="backGray" style="font-size:10em; text-align:right;vertical-align: middle; line-height: 90px; "> <h style="z-index:1000005; right:15%; top:40%; position:fixed;">--------></h></div>
+    <div class="scroll-pane" id="buff">Buffer:</div>
+    <div class="backGray" style="font-size:10em; text-align:right;vertical-align: middle; line-height: 90px; ">
+        <h style="right:15%; top:40%; position:absolute;" class="moveLeftToRight"> >>>&nbsp</h>
+    </div>
     <div class="backWhite" onclick="hideBuff()"></div>
 	<div class="disp" id="disp" style="left:10%;">
 		<div class="one-page">

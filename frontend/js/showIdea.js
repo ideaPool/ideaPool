@@ -5,6 +5,14 @@ window.onload = function() {
     BUFF_VIEW_ID = "buff"; /*set buff.js global variable*/
     openWS();
     checkLogin(); /* in login.js*/ 
+    buffEnDrag();
+}
+function makeScrollBar()
+{
+     $(function()
+    {
+    	$('.scroll-pane').jScrollPane(); 
+    });
 }
 function openWS(){
     if("WebSocket" in window) {
@@ -278,6 +286,7 @@ $( document ).ready(makeDraggable());
 function makeDraggable()
 {
     var onMouseOut;
+    var dragEl;
     $( ".draggable" ).draggable({
       helper: function() {
         //debugger;
@@ -286,8 +295,11 @@ function makeDraggable()
         $(tmp.get(1)).css('z-index', '1011');
         tmp.css('width', '160px');
         tmp.css('height', '120px');
-        tmp.attr('class', tmp.attr('class')+'toDrag')
-        return $("<div></div>").append(tmp);
+        dragEl = $("<div></div>").append(tmp);
+        oao = $(this).parent().parent().append(dragEl);
+        console.log("dragEL:", $(dragEl));
+        del('tmpLarge');
+        return dragEl;
       },
       revert: "invalid",
       cursor: "move",
@@ -297,6 +309,7 @@ function makeDraggable()
             $('.droppable').css('display', 'block');
             onMouseOut = $('.draggable').attr('onmouseout');
             $('.draggable').attr('onmouseout', '');
+            console.log($('.dragImg').parent());
             $('#buffIcon').css('display', 'none');
       },
       drag: function(){
@@ -335,6 +348,7 @@ function showBuff()
         $('#buff').css('display', 'block');
         $('.backWhite').css('display', 'block');
         isBuffShow = 1;
+        makeScrollBar();
     }
 }
 function hideBuff()
@@ -344,19 +358,21 @@ function hideBuff()
     isBuffShow = 0;
 }
 /* make buff icon draggable*/
-$(function() {
-    var tmpOnclick;
-    $( "#buffIcon" ).draggable({
-        start: function(event, ui){
-           isDrag = 1;
-        },
-        drag: function(){
-            
-        },
-        stop: function(event, ui){
-            setTimeout(function(){isDrag=0;}, 300);
-        } 
+function buffEnDrag(){
+    $(function() {
+        var tmpOnclick;
+        $( "#buffIcon" ).draggable({
+            start: function(event, ui){
+               isDrag = 1;
+            },
+            drag: function(){
+                
+            },
+            stop: function(event, ui){
+                setTimeout(function(){isDrag=0;}, 300);
+            } 
+        });
     });
-});
+}
   
   
