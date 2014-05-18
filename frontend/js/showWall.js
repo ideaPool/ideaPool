@@ -1,38 +1,216 @@
+var changeIdeaEnable = 1;
 window.onload = function()
 {
     BUFF_VIEW_ID = "wallBuffer";/*set buff.js global variable*/
     openWS();
-    checkLogin(); /* in login.js*/ 
+    enScroll();
+    
 }
+window.onresize = function(event) {
+    enScroll();
+}; 
 
 function openWS(){
     if("WebSocket" in window) {
         console.log("browser support!");
         openBufferWS();
+        openShowWallWS();
     }
     else {
       console.log("browser don't support!");
     }
 }
 
-// var scrollEnable = 1;
+function openShowWallWS() {
+    ws = new WebSocket("ws://ideapool.kd.io:8080/showWall");
+    ws.onopen = function(e){
+        console.log("success connected to /wall");
+        loadWall();
+    }
+    ws.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        
+        if(data.tar == "sendWall"){
+            currentPageWalls = data.walls; /* set a global var to be used in afterward times*/
+            console.log(data);
+            showAllWalls(data.walls);
+            //closeLoadingIcon();
+            //setTimeout(closeLoadingIcon(), 200); /* in loader.js*/
+        }
+    }; 
+    ws.onclose = function(e) {
+        openShowWallWS();
+    }; 
+}
+
+function loadWall(){
+    var data = {
+        tar : "loadWall"
+    };
+    ws.send(JSON.stringify(data));
+}
+
+function enScroll()
+{
+    $(function()
+    {
+        $('.scroll-pane').jScrollPane();
+    });
+}
+function clickLeft(icon){
+    var block = $(icon).parent();
+    var ideas = $(block).get(0).getElementsByClassName('wallIdea');
+    if( changeIdeaEnable ) {
+        changeIdeaEnable = 0;
+        for( i in ideas ){
+            if( ideas[i].style && (typeof ideas[i].style != 'undefined') ){
+                var l = ideas[i].style.left;
+                l = parseInt(l);
+                if( 0==i && l+25 > 0)
+                    break;
+                $(function(){
+                    $(ideas[i]).animate({
+                        left: (l+25) + '%'
+                    },150, function(){
+                    });
+                });
+            }
+        }
+        setTimeout(function(){changeIdeaEnable = 1;}, 150);   
+    }
+    else{
+        setTimeout(function(){clickLeft(icon);}, 150);
+    }
+}
+function clickRight(icon){
+    var block = $(icon).parent();
+    var ideas = $(block).get(0).getElementsByClassName('wallIdea');
+    if(changeIdeaEnable){
+        changeIdeaEnable = 0;
+        for( i in ideas ){
+            if( ideas[i].style && (typeof ideas[i].style != 'undefined') ){
+                var l = ideas[i].style.left;
+                l = parseInt(l);
+                if(0==i && ideas.length>4 && l-25<=-1*25*(ideas.length-3))
+                    break;
+                console.log(-1*25*ideas.length);
+                $(function(){
+                    $(ideas[i]).animate({
+                        left: (l-25) + '%'
+                    },150, function(){
+                    });
+                });
+            }
+        }
+        setTimeout(function(){changeIdeaEnable = 1;}, 150);
+    }
+    else{
+        setTimeout(function(){clickRight(icon);}, 150);
+    }
+        
+}
+function showAllWalls(wallList)
+{
+    var el = document.getElementById('allWalls');
+    $(el).empty(); /*clear inside things*/
+   
+    for(var i in wallList){
+        var view = getWallView(wallList[i], i);
+        el.appendChild( view );
+    }
+}
+function getWallView(wall, idNum)
+{
+    var wallContainer = document.createElement("div");
+    wallContainer.className = "wallBlockContainer";
+    wallContainer.id = "wb"+ idNum.toString();
+    $(wallContainer).css('top', (idNum*100).toString()+'%');
+    
+    var wallView = document.createElement("div");
+    wallView.className = "wallBlock"; 
+//    var ideaView = document.createElement("div");
+//    ideaView.className = "wallIdeaBlock";
+    
+    var dom_del = document.createElement("div");
+    dom_del.innerHTML = 'X';
+    dom_del.className = "delWall";
+    wallView.appendChild(dom_del);
+    
+    var dom_title = document.createElement("div");
+    dom_title.innerHTML = wall.title;
+    dom_title.className = "wallTitle";
+    wallView.appendChild(dom_title);
+
+    var dom_dscprt = document.createElement("div");
+    dom_dscprt.innerHTML = wall.description;
+    dom_dscprt.className = "wallDscrpt scroll-pane";
+    wallView.appendChild(dom_dscprt);
+    
+    var dom_ideas = document.createElement("div");
+    dom_ideas.className = "wallIdeaBlock";
+    dom_ideas.id = wallView.id + "_idea";
+    wallView.appendChild(dom_ideas);
+    
+    wallView.innerHTML += ' <i onclick="clickRight(this);" class="fa fa-angle-right fa-2x" id="click-r" style="position:absolute; bottom:20%; right:3%; z-index:99;"></i>';
+    wallView.innerHTML += ' <i onclick="clickLeft(this);" class="fa fa-angle-left fa-2x" id="click-l" style="position:absolute; bottom:20%; left:3%; z-index:99; " ></i>'
+    
+    wallContainer.appendChild(wallView);
+    return wallContainer;
+}
+function allWallIdeasView(ideaList)
+{
+    var el = document.getElementById('wb1_idea');
+    $(el).empty(); /*clear inside things*/
+   
+    for(var i in ideaList){
+        var view = wallIdeaView(ideaList[i]);
+        $(view).css('left', (i*25).toString()+'%');
+        console.log((i*25).toString()+'%');
+        el.appendChild( view );
+    }
+}
+function wallIdeaView(idea)
+{
+    var ideaView = document.createElement("div");
+    ideaView.className = "wallIdea";
+    
+//    var ideaView = document.createElement("div");
+//    ideaView.className = "wallIdeaBlock";
+    
+    var dom_title = document.createElement("div");
+    dom_title.innerHTML = idea.title;
+    dom_title.className = "wallIdeaTitle";
+    ideaView.appendChild(dom_title);
+
+    var dom_img = document.createElement("img");
+    dom_img.src = idea.img;
+    ideaView.appendChild(dom_img);
+    
+    return ideaView;
+    
+}
+
+
+var scrollEnable = 1;
 function goToByScroll(id){
-  // $(window).unbind('scroll');
-  // disableScroll();
-// if(scrollEnable){
-  // scrollEnable = 0;
-  console.log('  Scroll to '+id);
-  console.log('  goToByScroll '+id+': '+$("#"+id).offset().top+', cur: '+$('body').scrollTop());
-  $('body').animate({scrollTop: $("#"+id).offset().top}, 1000, function(){
-    // console.log('  ***** scroll done, cnt: '+cnt+', lastTop: '+lastTop+', cur: '+$('body').scrollTop()+' *****');
-    // if(cnt<6){
-    setTimeout(function(){$(window).bind('scroll', autoScroll);}, 100);
-    setTimeout(enableScroll, 100);
-    // scrollEnable = 1;
-    // lastTop = $('body').scrollTop();
-    // }
-  });
-// }
+  $(window).unbind('scroll');
+  disableScroll();
+  if(scrollEnable){
+    scrollEnable = 0;
+    console.log('  Scroll to '+id);
+    console.log('  goToByScroll '+id+': '+$("#"+id).offset().top+', cur: '+$('body').scrollTop());
+    $('body').animate({scrollTop: $("#"+id).offset().top}, 1000, function(){
+      // console.log('  ***** scroll done, cnt: '+cnt+', lastTop: '+lastTop+', cur: '+$('body').scrollTop()+' *****');
+      // if(cnt<6){
+      setTimeout(function(){$(window).bind('scroll', autoScroll);}, 100);
+      setTimeout(enableScroll, 100);
+      scrollEnable = 1;
+      // lastTop = $('body').scrollTop();
+      // }
+    });
+  }else{
+    console.log('goToByScroll disabled');
+  }
 }
 
 // var lastTop;
@@ -42,19 +220,12 @@ $(document).ready(function(){
     wallIds[n] = $(this).attr('id');
     console.log('wallIds['+n+'] = '+ wallIds[n]);
   })
-  $(window).unbind('scroll');
-  disableScroll();
   goToByScroll(wallIds[0]);
 });
 
-var cnt = 0;
-$(document).ready(function(){
-  $(window).bind('scroll', autoScroll);
-});
 function autoScroll(){
   $(window).unbind('scroll');
   disableScroll();
-  ++cnt;
   var curTop = $(this).scrollTop();
   var nearestWall;
   var nearestDist = 100000000;

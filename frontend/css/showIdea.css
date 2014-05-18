@@ -67,15 +67,15 @@ body {
  /* Chrome, Safari, Opera */
 @-webkit-keyframes moveLeftToRight
 {
-0% {right: 95%;}
-100% {right:15%;}
+    0% {right: 95%;}
+    100% {right:15%;}
 }
 
 /* Standard syntax */
 @keyframes moveLeftToRight
 {
-0% {right: 95%;}
-100% {right:15%; }
+    0% {right: 95%;}
+    100% {right:15%; }
 }
 #buff{
     overflow:scroll;
@@ -102,7 +102,7 @@ body {
         }
         #buff .buffView img{
             width:90%;
-            height:20%;
+            height:80%; 
             z-index:100005;
         }
 .jspTrack
@@ -120,13 +120,13 @@ body {
     cursor: pointer;
 }        
 #buffIcon{
-    position: absolute;
+    position: fixed;
     opacity:0.9;
     width: 50px;
     height: 50px;
     z-index: 10005;
     left:3%;
-    bottom:5%;
+    bottom:20%;
     background-color: #606060 ;
     color: white;
 	border-radius: 50px;	/* 高度 */
@@ -166,18 +166,25 @@ body {
 		opacity:0;
 	}
 	.disp .title{
+	    margin-top: 3%;
 	    color: #F8F8F8;
-	    font-size: 2em;
+	    font-size: 2.5em;
 	}
 	.disp .owner{
+	    margin: 1%;
 	    color: #F8F8F8;
 	    font-size: 1.5em;
 	}
 	.disp .description{
 	    color: #F8F8F8;
 	    font-size:1 em;
+	    max-height: 60%;
+		overflow: scroll; 
 	}
-	
+		.disp .description::-webkit-scrollbar { 
+		    display: none; 
+		}
+
 
 	.xs{
 		width:14%;

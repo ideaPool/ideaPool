@@ -3,11 +3,19 @@ var loginConnStat = 0;
 var accessToken = null;
 var currentUser=null;
 
+
+window.onload = function() {
+    openLoginWS();
+}
+
+
 function openLoginWS() {
     loginWs = new WebSocket("ws://ideapool.kd.io:8080/login");
     loginWs.onopen = function(e){
         console.log("success connected to /login");
         loginConnStat = 1;
+        if(currentUser == null)
+            checkLogin();
     }
     loginWs.onmessage = function(e) {
         
@@ -39,8 +47,8 @@ function FBLogin(){
         } else {
             FB.login(function (response) {
                 if (response.authResponse) {
+                    accessToken = response.authResponse.accessToken;
                     FB.api('/me', function (response) {
-                        accessToken = response.authResponse.accessToken;
                         LoginSuccess(response);
                     });
                 } else {
@@ -96,30 +104,32 @@ function getAccessToken()
 function setLogInfo(response)
 {
     currentUser = response.id;
+    console.log("call loadBuffer!");
     loadBuffer(); /*from buffer.js*/
 }
 function checkLogin()
 {
-    if(!loginConnStat)
-        openLoginWS();
+    
     FB.init({
         appId: 1399324597007868,
         status: true,
         cookie: true,
         xfbml: true,
-        channelURL: 'http://ideapool.kd.io/channel.html', //
+        channelURL: 'http://ideapool.kd.io/channel.html', 
         oauth: true
     });
     FB.getLoginStatus(function (response) {
         if (response.authResponse) {
             accessToken = response.authResponse.accessToken;
             FB.api('/me', function (response) {
-                 setLogInfo(response);
+                setLogInfo(response);
             });
         }
     })
     
+    
     if(currentUser!==null)
         return true;
     else return false;
+    
 }

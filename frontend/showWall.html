@@ -10,11 +10,15 @@
     <script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css" /> 
+    <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+    <script type="text/javascript" src="js/icon.js"></script>
     <script type="text/javascript" src="js/nav.js"></script>
 	<script type="text/javascript" src="js/loader.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
     <script type="text/javascript" src="js/buffer.js"></script>
     <script type="text/javascript" src="js/showWall.js"></script>
+    
 </head>
 <body>
 	<!-- NAV --->
@@ -43,109 +47,60 @@
   <div id="wallNav">
     <div class="wnbContainer"></div>
     <div class="wnbContainer">
+      <div class="wallNavButton" onclick="goToByScroll('wb0')"></div>
+    </div>
+    <div class="wnbContainer">
       <div class="wallNavButton" onclick="goToByScroll('wb1')"></div>
     </div>
     <div class="wnbContainer">
       <div class="wallNavButton" onclick="goToByScroll('wb2')"></div>
     </div>
-    <div class="wnbContainer">
-      <div class="wallNavButton" onclick="goToByScroll('wb3')"></div>
-    </div>
   </div>
   
   <!-- buffer for walls -->
-  <div id="wallBuffer">
-  
-  </div>
+  <div id="wallBuffer" style="display:none;"></div>
   
   <!-- display layer -->
   <div class="droppable" id="drop"></div>
   <div class="backGray" ></div>
   
-  <div class="wallBlockContainer" id="wb1">
-    <div class="wallBlock">123
+  <!-- <div id="blocker"></div> -->
+  
+    <div id = "allWalls">
+        <div class="wallBlockContainer" id="wb0">
+            <div class="wallBlock">
+                <div class="delWall"> X </div>
+                <div class="wallTitle"> Wall Title</div>
+                <div class="wallDscrpt scroll-pane">  <p>This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD</p> </div>
+                <i onclick="clickRight(this);" class="fa fa-angle-right fa-2x" id="click-r" style="position:absolute; bottom:20%; right:3%; z-index:99;"></i>
+        	    <i onclick="clickLeft(this);" class="fa fa-angle-left fa-2x" id="click-l" style="position:absolute; bottom:20%; left:3%; z-index:99; " ></i>
+                <div class="wallIdeaBlock" id='wb1_idea'>
+                    <div class="wallIdea" style="left:0%;">
+                        <div class="wallIdeaTitle">title</div>
+                        <img src="http://gearheads.org/wp-content/uploads/2012/10/omg1.jpg">
+                    </div>
+                    <div class="wallIdea" style="left:25%t;">
+                        <div class="wallIdeaTitle">title2</div>
+                        <img src="http://static.planetminecraft.com/files/resource_media/screenshot/1226/OMG_2725489.jpg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wallBlockContainer" id="wb1">
+            <div class="wallBlock">321
+            </div>
+        </div>
+        <div class="wallBlockContainer" id="wb2">
+            <div class="wallBlock">1234567
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="wallBlockContainer" id="wb2">
-    <div class="wallBlock">321
-    </div>
-  </div>
-  <div class="wallBlockContainer" id="wb3">
-    <div class="wallBlock">1234567
-    </div>
-  </div>
+    
+    <!--- Buffer Icon --->
+	<div id="buffIcon" class="buffIcon" onclick="clickBuffIcon()">
+	    <h style="position:absolute; left:15%; top: 20%;">Buff</h>
+	</div>    
   
 </body>
 </html>
 
-
-<!-- <script>
-    var ws;
-    function openSubmitWS(messageContainer) {
-        ws = new WebSocket("ws://ideapool.kd.io:8080/submitIdea");
-        ws.onmessage = function(e) {
-          var idea = JSON.parse(e.data);
-          fillIdeaBlock(idea.title, idea.description, idea.owner, idea.img);
-        };
-        ws.onclose = function(e) {
-          openSubmitWS(messageContainer);
-        }; 
-    }
-    function fillIdeaBlock(title, description, owner, img){
-        var ideaBlocks = document.getElementsByClassName("ideaBlock");
-        for(var i=0 ; i<ideaBlocks.length ; i++ ){
-            var dom_title = document.createElement("div");
-            dom_title.innerHTML = "title: " + title;
-            ideaBlocks[i].appendChild(dom_title); 
-            
-            var dom_description = document.createElement("div");
-            dom_description.innerHTML = "discription: <br>" + description;
-            ideaBlocks[i].appendChild(dom_description);
-            
-            var dom_owner = document.createElement("div");
-            dom_owner.innerHTML = "owner: " + owner;
-            ideaBlocks[i].appendChild(dom_owner);
-            
-            var dom_img = document.createElement("img");
-            var el = document.getElementById(ideaBlocks[i].id);
-            var w = '100%';
-            var h = '100%';
-            dom_img.src = img;
-            dom_img.style.zIndex = -100;
-            dom_img.style.position = "absolute";
-            dom_img.style.top = "0";
-            dom_img.style.left = '0'; 
-            dom_img.style.width = w;
-            dom_img.style.height = h;
-            //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
-            ideaBlocks[i].appendChild(dom_img);
-            
-            var dom_filter = document.createElement("img");
-            var el = document.getElementById(ideaBlocks[i].id);
-            var w = '100%';
-            var h = '100%';
-            dom_filter.style.zIndex = -99;
-            dom_filter.style.position = "absolute";
-            dom_filter.style.top = "0";
-            dom_filter.style.left = '0'; 
-            dom_filter.style.width = w;
-            dom_filter.style.height = h;
-            dom_filter.style.background = 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%)';
-            //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
-            ideaBlocks[i].appendChild(dom_filter);
-            
-            ideaBlocks[i].onmousedown = "createSmallImg("+ideaBlocks[i].id+","+img+")";
-        }
-    }
-    window.onload = function() {
-        var messageContainer = document.getElementById("body");
-        if("WebSocket" in window) {
-            console.log("browser support!");
-            openSubmitWS(messageContainer);
-        }
-        else {
-          console.log("browser don't support!");
-        }
-    }
-</script>
- -->

@@ -1,7 +1,11 @@
 var bufferWs = null;
 var bufferConnStat = 0;
 var BUFF_VIEW_ID;
+var isBuffShow = 0;
 
+window.onload = function() {
+    openBufferWS();
+}
 function openBufferWS() 
 {
     bufferWs = new WebSocket("ws://ideapool.kd.io:8080/buffer");
@@ -14,12 +18,26 @@ function openBufferWS()
         var data = JSON.parse(e.data);
         if(data.tar == "sendBuff"){
             buffView(data.buff, BUFF_VIEW_ID);
+            allWallIdeasView(data.buff);
+        }
+        else if(data.tar == "signSuccess"){
+            loadBuffer();
         }
     }; 
     bufferWs.onclose = function(e) {
         openBufferWS();
     }; 
 }
+
+function makeScrollBar()
+{
+    $('.scroll-pane').attr('class', 'scroll-pane');
+    $(function()
+    {
+        $('.scroll-pane').jScrollPane(); 
+    });
+}
+
 function buffView(buffList, buffViewId)
 {
     var el = document.getElementById(buffViewId);
@@ -56,7 +74,7 @@ function buffIdeaView(idea)
     
 }
 
-/* often called by login.js*/
+/* often called by login.js (since this should be load only when logged in)*/
 function loadBuffer()
 {
     var data = {
@@ -65,6 +83,16 @@ function loadBuffer()
     };
     bufferWs.send(JSON.stringify(data));
 }
+
+function signBuffer()
+{
+    var data = {
+        tar : "signBuffer",
+        accessToken : accessToken
+    };
+    bufferWs.send(JSON.stringify(data));
+}
+
 function parseId(idea_id)
 {
     id = idea_id.split('_');
@@ -87,4 +115,34 @@ function bufferIdea(idea_id)
         console.log(data);
         bufferWs.send(JSON.stringify(data));
     }
+}
+
+function clickBuffIcon()
+{
+    console.log('click_buff: ', isBuffShow);
+    if(isBuffShow){
+        hideBuff();
+    }
+    else{
+        showBuff();
+    }
+}
+
+function showBuff()
+{
+    console.log('#'+BUFF_VIEW_ID+'show');
+    if(!iconIsDrag){
+        $('#'+BUFF_VIEW_ID).css('display', 'block');
+        $('.backWhite').css('display', 'block');
+        hideIcon();
+        isBuffShow = 1;
+    }
+}
+function hideBuff()
+{
+    console.log('#'+BUFF_VIEW_ID+'hide');
+    $('#'+BUFF_VIEW_ID).css('display', 'none');
+    $('.backWhite').css('display', 'none');
+    showIcon();
+    isBuffShow = 0;
 }

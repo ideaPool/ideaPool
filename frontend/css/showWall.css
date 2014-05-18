@@ -9,34 +9,50 @@ body {
   font-weight: 300;
   overflow-x: hidden;
 }
-.backGray{
-    position:fixed;
-    background-color: rgba(10%, 10%, 10%, 0.9);
-    width:100%;
-    height:100%;
-    top:0;
-    left:0;
-    z-index:1000;
-    display:none;
+body::-webkit-scrollbar { 
+  display: none; 
 }
-.droppable{
-    background-color:red;
-    display:none;
-    position:fixed;
-    left:0px;
-    top:0px;
-    width:10%;
-    height:100%;
-    opacity:0.7;
-    z-index:1005;
+
+.wallIdeaBlock{
+    position:absolute;
+    width:80%;
+    left: 10%;
+    bottom:5%;
+    height:40%;
+    overflow: hidden;
+    border-radius: 30px;
+    color:black;
+    background-color: rgba(255, 255, 255, 0.7) ;
 }
+    .wallIdeaBlock .wallIdea{
+        position: absolute;
+        width: 23%;
+        height:90%;
+        font-size: 1.3em;
+        margin:1%;
+    }
+    .wallIdeaBlock .wallIdea .wallIdeaTitle{
+        max-height:10%;
+    }
+    .wallIdeaBlock .wallIdea img{
+        opacity:0.8;
+        border-radius: 10px;
+        -webkit-filter:sepia(0.3);
+        -webkit-box-shadow: #666 0px 2px 3px; 
+        position:absolute;
+        height: 85%;
+        width:100%;
+        bottom:0;
+        margin:1%;
+    }
 
 #wallNav{
   position: fixed;
-  top: 10%;
-  width: 12%;
-  height: 89%;
-  background-color: blue;
+  top: 8%;
+  width: 6%;
+  right: 0;
+  height: 90%;
+  background-color: rgba(255, 255, 255, 0.7);
   opacity: 0.5;
 }
 .wnbContainer{
@@ -49,7 +65,7 @@ body {
   width: 20%;
   margin: 0px auto;
   border-radius: 100px;
-  background-color: white;
+  background-color: #B0B0B0 ;
   opacity: 0.6;
 }
 .wallNavButton:before{
@@ -63,14 +79,14 @@ body {
 
 #wallBuffer{
   position: fixed;
-  right: 0%;
+  right: 0.5%;
   top: 10%;
   width: 12%;
   height: 89%;
-  background-color: blue;
-  opacity: 0.5;
+  background-color: rgba(13%, 20%, 10%, 0.8) ;
+  opacity: 0.9;
+  overflow-y:scroll;
 }
-
     #wallBuffer .buffView{
         width:90%;
         height:15%;
@@ -88,33 +104,101 @@ body {
         }
 
 #wallDisp{
-	position: absolute;
+    position: absolute;
 	top: 15%;
-  left: 10%;
+    left: 10%;
 	width: 80%;
-  height: 100%;
-  background-color: rgba(100%, 100%, 10%, 0.8);
+    height: 100%;
+    background-color: rgba(100%, 100%, 10%, 0.8);
 }
 .wallBlockContainer{
   position: absolute;
   width: 100%;
   height: 100%;
   z-index: -1;
+  color: #F8F8F8 ;
 }
 .wallBlock{
   position: relative;
   top: 10%;
-  left: 12%;
-  width: 75.5%;
+  left: 7%;
+  width: 86%;
   height: 89%;
-  background-color: rgba(100%, 100%, 10%, 0.8);
+  background-color: #CC99CC;
+  // background-color: #FF9966 ;
+   border-radius: 30px;
+  //background-color: rgba(100%, 100%, 10%, 0.8);
 }
-#wb1{
+    .wallBlock .wallTitle{
+        position: absolute;
+        font-size: 2.5em;
+        font-weight: bold;
+        width: 18%;
+        word-break:keep-all;
+        text-align:center;
+        left:10%;
+        bottom:65%;
+    }
+    .wallBlock .wallDscrpt{
+        position: absolute;
+        right: 10%;
+        max-width: 55%;
+        height:33%;
+        top: 10%;
+        text-align:left;
+        font-size: 1.3em;
+        word-break:keep-all;
+    }
+    
+#blocker{
+  position: fixed;
   top: 0%;
+  width: 100%;
+  height: 10%;
+  background-color: white;
+  z-index: 10;
 }
-#wb2{
-  top: 100%;
+
+
+#buffIcon{
+    position: fixed;
+    opacity:0.9;
+    width: 50px;
+    height: 50px;
+    z-index: 10005;
+    left:1.7%;
+    bottom:1%;
+    background-color: #606060 ;
+    color: white;
+	border-radius: 50px;	/* 高度 */
 }
-#wb3{
-  top: 200%;
+
+.delWall{
+    position: absolute;
+    opacity:0.9;
+    width: 30px;
+    height: 30px;
+    z-index: 10005;
+    right: 1%;
+    top:1.3%;
+    text-align:center;
+    font-size:1.3;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.5) ;
+    color: #CC99FF;
+	border-radius: 30px;
 }
+.jspTrack
+{
+    background: #C0C0C0  !important; 
+    position: relative;
+}
+ 
+.jspDrag
+{
+    background: #787878 !important; 
+    position: relative;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}  

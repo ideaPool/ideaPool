@@ -1,19 +1,12 @@
 var ws;
 var currentPageIdeas = null;
 var currentDragId = null;
+
 window.onload = function() {
     BUFF_VIEW_ID = "buff"; /*set buff.js global variable*/
     openWS();
-    checkLogin(); /* in login.js*/ 
-    buffEnDrag();
 }
-function makeScrollBar()
-{
-     $(function()
-    {
-    	$('.scroll-pane').jScrollPane(); 
-    });
-}
+
 function openWS(){
     if("WebSocket" in window) {
         console.log("browser support!");
@@ -40,7 +33,7 @@ function openShowIdeaWS() {
                 var id = "idea_"+i.toString();
                 fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
             }
-            closeLoadingIcon()
+            closeLoadingIcon();
             //setTimeout(closeLoadingIcon(), 200); /* in loader.js*/
         }
     }; 
@@ -296,7 +289,7 @@ function makeDraggable()
         tmp.css('width', '160px');
         tmp.css('height', '120px');
         dragEl = $("<div></div>").append(tmp);
-        oao = $(this).parent().parent().append(dragEl);
+        $(this).parent().parent().append(dragEl);
         console.log("dragEL:", $(dragEl));
         del('tmpLarge');
         return dragEl;
@@ -310,7 +303,7 @@ function makeDraggable()
             onMouseOut = $('.draggable').attr('onmouseout');
             $('.draggable').attr('onmouseout', '');
             console.log($('.dragImg').parent());
-            $('#buffIcon').css('display', 'none');
+            $('.icon').css('display', 'none');
       },
       drag: function(){
       },
@@ -318,7 +311,7 @@ function makeDraggable()
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.backGray').css('display', 'none');
             $('.droppable').css('display', 'none');
-            $('#buffIcon').css('display', 'block');
+            $('.icon').css('display', 'block');
       }
     });
     $('.droppable').droppable({
@@ -333,46 +326,6 @@ function makeDraggable()
         }
     });
 }
-var isBuffShow = 0;
-var isDrag = 0;
-function clickBuffIcon()
-{
-    if(isBuffShow)
-        hideBuff();
-    else
-        showBuff();
-}
-function showBuff()
-{
-    if(!isDrag){
-        $('#buff').css('display', 'block');
-        $('.backWhite').css('display', 'block');
-        isBuffShow = 1;
-        makeScrollBar();
-    }
-}
-function hideBuff()
-{
-    $('#buff').css('display', 'none');
-    $('.backWhite').css('display', 'none');
-    isBuffShow = 0;
-}
-/* make buff icon draggable*/
-function buffEnDrag(){
-    $(function() {
-        var tmpOnclick;
-        $( "#buffIcon" ).draggable({
-            start: function(event, ui){
-               isDrag = 1;
-            },
-            drag: function(){
-                
-            },
-            stop: function(event, ui){
-                setTimeout(function(){isDrag=0;}, 300);
-            } 
-        });
-    });
-}
+
   
   

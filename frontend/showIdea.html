@@ -9,14 +9,17 @@
 	<link type="text/css" href="css/showIdea.css" rel="stylesheet" />
 	<link type="text/css" href="css/nav.css" rel="stylesheet" />
 	<link type="text/css" href="css/loader.css" rel="stylesheet" />
+	<link type="text/css" href="css/submit.css" rel="stylesheet" />
 	<script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
 	<script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+	<script type="text/javascript" src="js/icon.js"></script>
 	<script type="text/javascript" src="js/nav.js"></script>
 	<script type="text/javascript" src="js/loader.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
 	<script type="text/javascript" src="js/buffer.js"></script>
+	<script type="text/javascript" src="js/submitIdea.js"></script>
     <script type="text/javascript" src="js/showIdea.js"></script>
 </head>
 <body>
@@ -41,6 +44,14 @@
 			</li>
 		</ul>
 	</nav>
+	
+	<!-- Submit page -->
+    <div id="submitContainer" onclick="hideSubmit();">
+        <iframe id="submitPage" src="./submit.html" border="0" frameborder="0"></iframe>
+    </div>
+    <div id="submitIcon" class="icon" onclick="showSubmit();">
+        <div id="submitIconArrow" class="fa fa-upload"></div>
+    </div>
 
 	<!-- display layer -->
 	<div class="right side-cover" onclick="nextBlock()" ></div>
@@ -152,7 +163,7 @@
 	</div>
 	
 	<!--- Buffer Icon --->
-	<div id="buffIcon" class="buffIcon" onclick="clickBuffIcon()">
+	<div id="buffIcon" class="buffIcon icon" onclick="clickBuffIcon()">
 	    <h style="position:absolute; left:15%; top: 20%;">Buff</h>
 	</div>
 	
