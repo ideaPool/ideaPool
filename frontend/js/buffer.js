@@ -62,9 +62,16 @@ function buffIdeaView(idea)
     ideaView.className = "buffView";
     
     var dom_title = document.createElement("div");
-    dom_title.innerHTML = idea.title;
+    dom_title.innerHTML += idea.title;
     dom_title.className = "title";
     ideaView.appendChild(dom_title);
+
+    var dom_del = document.createElement("div");
+    dom_del.innerHTML = "[del]";
+    dom_del.className = "del";
+    //console.log("delBuffIdea("+ idea.id.toString() + ")");
+    dom_del.setAttribute("onclick", "delBuffIdea("+ idea.id.toString() + ")");
+    ideaView.appendChild(dom_del);
 
     var dom_img = document.createElement("img");
     dom_img.src = idea.img;
@@ -73,7 +80,15 @@ function buffIdeaView(idea)
     return ideaView;
     
 }
-
+function delBuffIdea(ideaId)
+{
+    var data = {
+        tar : "delBuffIdea",
+        ideaId: ideaId, 
+        accessToken : accessToken
+    };
+    bufferWs.send(JSON.stringify(data));
+}
 /* often called by login.js (since this should be load only when logged in)*/
 function loadBuffer()
 {

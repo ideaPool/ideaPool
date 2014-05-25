@@ -8,19 +8,23 @@ loginUserAuth = {}
 class users(db.MySQLModel):
     id = pw.PrimaryKeyField()
     email = pw.CharField()
+    name = pw.CharField()
 
-def checkAndSaveUser(id, email):
+def checkAndSaveUser(id, email, name):
     try:
         user = users.get(users.id == id)
     except users.DoesNotExist:
-        user = users.create(id=id, email=email)
+        user = users.create(id=id, email=email, name = name)
     finally:
         user.save()
 
 def userLogin(msg):
-    user = getFbUserInfo(msg['accessToken'])
-    checkAndSaveUser(user['id'], user['email'])
-        
+    try:
+        user = getFbUserInfo(msg['accessToken'])
+        checkAndSaveUser(user['id'], user['email'], user['name'])
+        return user
+    except:
+        return None
 
 def userLogout(userId):
     loginUserAuth.pop( msg['id'], None )

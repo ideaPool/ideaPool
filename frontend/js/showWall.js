@@ -1,4 +1,5 @@
 var changeIdeaEnable = 1;
+var wallWs;
 window.onload = function()
 {
     BUFF_VIEW_ID = "wallBuffer";/*set buff.js global variable*/
@@ -15,6 +16,7 @@ function openWS(){
         console.log("browser support!");
         openBufferWS();
         openShowWallWS();
+        openLoginWS();
     }
     else {
       console.log("browser don't support!");
@@ -22,12 +24,12 @@ function openWS(){
 }
 
 function openShowWallWS() {
-    ws = new WebSocket("ws://ideapool.kd.io:8080/showWall");
-    ws.onopen = function(e){
+    wallWs = new WebSocket("ws://ideapool.kd.io:8080/showWall");
+    wallWs.onopen = function(e){
         console.log("success connected to /wall");
         loadWall();
     }
-    ws.onmessage = function(e) {
+    wallWs.onmessage = function(e) {
         var data = JSON.parse(e.data);
         
         if(data.tar == "sendWall"){
@@ -38,7 +40,7 @@ function openShowWallWS() {
             //setTimeout(closeLoadingIcon(), 200); /* in loader.js*/
         }
     }; 
-    ws.onclose = function(e) {
+    wallWs.onclose = function(e) {
         openShowWallWS();
     }; 
 }
@@ -47,9 +49,17 @@ function loadWall(){
     var data = {
         tar : "loadWall"
     };
-    ws.send(JSON.stringify(data));
+    wallWs.send(JSON.stringify(data));
 }
-
+function delWall(wallId){
+    var accessToken = getAccessToken();
+    var data = {
+      tar : 'delWall',
+      wallId : wallId,
+      accessToken: accessToken
+    };
+    wallWs.send(JSON.stringify(data));
+}
 function enScroll()
 {
     $(function()
@@ -62,11 +72,11 @@ function clickLeft(icon){
     var ideas = $(block).get(0).getElementsByClassName('wallIdea');
     if( changeIdeaEnable ) {
         changeIdeaEnable = 0;
-        for( i in ideas ){
+        for( var i=0 ; i< ideas.length ; i++ ){
             if( ideas[i].style && (typeof ideas[i].style != 'undefined') ){
                 var l = ideas[i].style.left;
                 l = parseInt(l);
-                if( 0==i && l+25 > 0)
+                if( 0===i && l+25 > 0)
                     break;
                 $(function(){
                     $(ideas[i]).animate({
@@ -85,13 +95,13 @@ function clickLeft(icon){
 function clickRight(icon){
     var block = $(icon).parent();
     var ideas = $(block).get(0).getElementsByClassName('wallIdea');
-    if(changeIdeaEnable){
+    if(ideas.length>4 && changeIdeaEnable){
         changeIdeaEnable = 0;
-        for( i in ideas ){
+        for( var i=0 ; i<ideas.length ; i++ ){
             if( ideas[i].style && (typeof ideas[i].style != 'undefined') ){
                 var l = ideas[i].style.left;
                 l = parseInt(l);
-                if(0==i && ideas.length>4 && l-25<=-1*25*(ideas.length-3))
+                if(0===i && ideas.length>4 && l-25<=-1*25*(ideas.length-3))
                     break;
                 console.log(-1*25*ideas.length);
                 $(function(){
@@ -113,8 +123,9 @@ function showAllWalls(wallList)
 {
     var el = document.getElementById('allWalls');
     $(el).empty(); /*clear inside things*/
-   
-    for(var i in wallList){
+    console.log("oao: ", wallList.length);
+    
+    for(var i=0 ; i< wallList.length ; i++ ){
         var view = getWallView(wallList[i], i);
         el.appendChild( view );
     }
@@ -134,15 +145,16 @@ function getWallView(wall, idNum)
     var dom_del = document.createElement("div");
     dom_del.innerHTML = 'X';
     dom_del.className = "delWall";
+    $(dom_del).attr('onclick', 'delWall(' + wall.id.toString() + ')');
     wallView.appendChild(dom_del);
     
     var dom_title = document.createElement("div");
-    dom_title.innerHTML = wall.title;
+    $(dom_title).text( wall.title );
     dom_title.className = "wallTitle";
     wallView.appendChild(dom_title);
 
     var dom_dscprt = document.createElement("div");
-    dom_dscprt.innerHTML = wall.description;
+    $(dom_dscprt).text( wall.description );
     dom_dscprt.className = "wallDscrpt scroll-pane";
     wallView.appendChild(dom_dscprt);
     
@@ -150,6 +162,7 @@ function getWallView(wall, idNum)
     dom_ideas.className = "wallIdeaBlock";
     dom_ideas.id = wallView.id + "_idea";
     wallView.appendChild(dom_ideas);
+    allWallIdeasView(wall.ideaList, dom_ideas);
     
     wallView.innerHTML += ' <i onclick="clickRight(this);" class="fa fa-angle-right fa-2x" id="click-r" style="position:absolute; bottom:20%; right:3%; z-index:99;"></i>';
     wallView.innerHTML += ' <i onclick="clickLeft(this);" class="fa fa-angle-left fa-2x" id="click-l" style="position:absolute; bottom:20%; left:3%; z-index:99; " ></i>'
@@ -157,16 +170,17 @@ function getWallView(wall, idNum)
     wallContainer.appendChild(wallView);
     return wallContainer;
 }
-function allWallIdeasView(ideaList)
+function allWallIdeasView(ideaList, wallIdeaBlock)
 {
-    var el = document.getElementById('wb1_idea');
-    $(el).empty(); /*clear inside things*/
+    if(wallIdeaBlock===null || typeof wallIdeaBlock == 'undefined')
+        return;
+    $(wallIdeaBlock).empty(); /*clear inside things*/
    
-    for(var i in ideaList){
+    for(var i=0 ; i<ideaList.length ; i++){
         var view = wallIdeaView(ideaList[i]);
         $(view).css('left', (i*25).toString()+'%');
         console.log((i*25).toString()+'%');
-        el.appendChild( view );
+        wallIdeaBlock.appendChild( view );
     }
 }
 function wallIdeaView(idea)
@@ -178,7 +192,7 @@ function wallIdeaView(idea)
 //    ideaView.className = "wallIdeaBlock";
     
     var dom_title = document.createElement("div");
-    dom_title.innerHTML = idea.title;
+    $(dom_title).text( idea.title );
     dom_title.className = "wallIdeaTitle";
     ideaView.appendChild(dom_title);
 

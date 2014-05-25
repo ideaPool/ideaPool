@@ -4,11 +4,6 @@ var accessToken = null;
 var currentUser=null;
 
 
-window.onload = function() {
-    openLoginWS();
-}
-
-
 function openLoginWS() {
     loginWs = new WebSocket("ws://ideapool.kd.io:8080/login");
     loginWs.onopen = function(e){
@@ -95,7 +90,9 @@ function checkAndSaveUser(response)
 
 function getAccessToken()
 {
-    if( !checkLogin() ){
+    if(accessToken!==null)
+        return accessToken;
+    else if( !checkLogin() ){
         alert("You haven't login yet!");
         return null;
     }
@@ -105,6 +102,7 @@ function setLogInfo(response)
 {
     currentUser = response.id;
     console.log("call loadBuffer!");
+    checkAndSaveUser(response);
     loadBuffer(); /*from buffer.js*/
 }
 function checkLogin()
@@ -126,7 +124,6 @@ function checkLogin()
             });
         }
     })
-    
     
     if(currentUser!==null)
         return true;

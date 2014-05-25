@@ -33,8 +33,7 @@ function openShowIdeaWS() {
                 var id = "idea_"+i.toString();
                 fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
             }
-            closeLoadingIcon();
-            //setTimeout(closeLoadingIcon(), 200); /* in loader.js*/
+            closeLoadingIcon(); /* in loader.js*/
         }
     }; 
     ws.onclose = function(e) {
@@ -48,58 +47,6 @@ function loadInfo(){
     ws.send(JSON.stringify(data));
 }
 
-function fillIdeaBlock(title, description, owner, img){
-    var ideaBlocks = document.getElementsByClassName("ideaBlock");
-    $(ideaBlocks).empty();/*clear inside things*/
-    for(var i=0 ; i<ideaBlocks.length ; i++ ){
-        var dom_title = document.createElement("div");
-        dom_title.innerHTML = title;
-        dom_title.className = "title";
-        ideaBlocks[i].appendChild(dom_title); 
-        
-        var dom_owner = document.createElement("div");
-        dom_owner.className = "owner";
-        dom_owner.innerHTML = owner;
-        ideaBlocks[i].appendChild(dom_owner);
-        
-        var dom_description = document.createElement("div");
-        dom_description.className = "description";
-        dom_description.innerHTML = description;
-        dom_description.style.display = "none";
-        ideaBlocks[i].appendChild(dom_description);
-        
-        
-        var dom_img = document.createElement("img");
-        var el = document.getElementById(ideaBlocks[i].id);
-        var w = '100%';
-        var h = '100%';
-        dom_img.src = img;
-        dom_img.style.zIndex = -100;
-        dom_img.style.position = "absolute";
-        dom_img.style.top = "0";
-        dom_img.style.left = '0'; 
-        dom_img.style.width = w;
-        dom_img.style.height = h;
-        //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
-        ideaBlocks[i].appendChild(dom_img);
-        
-        var dom_filter = document.createElement("img");
-        el = document.getElementById(ideaBlocks[i].id);
-        w = '100%';
-        h = '100%';
-        dom_filter.style.zIndex = -99;
-        dom_filter.style.position = "absolute";
-        dom_filter.style.top = "0";
-        dom_filter.style.left = '0'; 
-        dom_filter.style.width = w;
-        dom_filter.style.height = h;
-        dom_filter.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%)";
-        //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
-        ideaBlocks[i].appendChild(dom_filter);
-        
-        //ideaBlocks[i].onmousedown = "createSmallImg("+ideaBlocks[i].id+","+img+")";
-    }
-}
 
 function fillIdeaBlock(title, description, owner, img, id){
     var ideaBlock = document.getElementById(id);
@@ -107,18 +54,18 @@ function fillIdeaBlock(title, description, owner, img, id){
     $(ideaBlock).empty();/*clear inside things*/
     
     var dom_title = document.createElement("div");
-    dom_title.innerHTML = title;
+    $(dom_title).text(title);
     dom_title.className = "title";
     ideaBlock.appendChild(dom_title); 
     
     var dom_owner = document.createElement("div");
     dom_owner.className = "owner";
-    dom_owner.innerHTML = owner;
+    $(dom_owner).text(owner);
     ideaBlock.appendChild(dom_owner);
     
     var dom_description = document.createElement("div");
     dom_description.className = "description";
-    dom_description.innerHTML = description;
+    $(dom_description).text( description );
     dom_description.style.display = "none";
     ideaBlock.appendChild(dom_description);
     
@@ -300,6 +247,8 @@ function makeDraggable()
       start: function(){
             $('.backGray').css('display', 'block');
             $('.droppable').css('display', 'block');
+            $('#trashCan').css('display', 'block');
+            $('#delLayer').css('display', 'block');
             onMouseOut = $('.draggable').attr('onmouseout');
             $('.draggable').attr('onmouseout', '');
             console.log($('.dragImg').parent());
@@ -311,6 +260,8 @@ function makeDraggable()
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.backGray').css('display', 'none');
             $('.droppable').css('display', 'none');
+            $('#trashCan').css('display', 'none');
+            $('#delLayer').css('display', 'none');
             $('.icon').css('display', 'block');
       }
     });
@@ -319,13 +270,43 @@ function makeDraggable()
             alert('Dropped!');
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.droppable').css('display', 'none');
+            $('#trashCan').css('display', 'none');
+            $('#delLayer').css('display', 'none');
             if(currentDragId!==null){
                 bufferIdea(currentDragId); /* this function is in buffer.js*/
             }
             currentDragId = null;
         }
     });
+     $('#delLayer').droppable({
+        drop: function(){
+            alert('Deleted!');
+            $('.draggable').attr('onmouseout', onMouseOut);
+            $('.droppable').css('display', 'none');
+            $('#trashCan').css('display', 'none');
+            $('#delLayer').css('display', 'none');
+            if(currentDragId!==null){
+                delIdea(currentDragId); /* this function is in buffer.js*/
+                alert("Remove Your ownership from the idea! However, if the idea has been buffered ot put into walls, the idea wouldn't be really deleted but change the owner to 'public'");
+            } 
+            console.log('oaoa');
+            currentDragId = null;
+        }
+    });
 }
 
-  
-  
+function delIdea(idea_id)
+{
+    var id = parseId(idea_id);
+    var idea = currentPageIdeas[id]; /* currentPageIdeas set in showIdea.js*/
+    
+    // getCurrentUser is in login.js
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "delIdea",
+        ideaId: idea.id,
+        accessToken : accessToken
+    };
+    console.log(data);
+    ws.send(JSON.stringify(data));
+}
