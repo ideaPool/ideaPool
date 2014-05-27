@@ -2,6 +2,7 @@ var bufferWs = null;
 var bufferConnStat = 0;
 var BUFF_VIEW_ID;
 var isBuffShow = 0;
+var curDragBuffId = -1;
 
 window.onload = function() {
     openBufferWS();
@@ -18,7 +19,8 @@ function openBufferWS()
         var data = JSON.parse(e.data);
         if(data.tar == "sendBuff"){
             buffView(data.buff, BUFF_VIEW_ID);
-            allWallIdeasView(data.buff);
+            if(BUFF_VIEW_ID == "wallBuffer")
+                makeBufferDraggable();
         }
         else if(data.tar == "signSuccess"){
             loadBuffer();
@@ -37,7 +39,11 @@ function makeScrollBar()
         $('.scroll-pane').jScrollPane(); 
     });
 }
-
+function setCurDragBuffId(id)
+{
+    curDragBuffId = id;
+    console.log("set curDragId\n");
+}
 function buffView(buffList, buffViewId)
 {
     var el = document.getElementById(buffViewId);
@@ -60,9 +66,10 @@ function buffIdeaView(idea)
 {
     var ideaView = document.createElement("div");
     ideaView.className = "buffView";
+    $(ideaView).attr('onmousedown', "setCurDragBuffId(" + idea.id.toString() + ")" );
     
     var dom_title = document.createElement("div");
-    dom_title.innerHTML += idea.title;
+    $(dom_title).text(idea.title);
     dom_title.className = "title";
     ideaView.appendChild(dom_title);
 
@@ -149,7 +156,7 @@ function showBuff()
     if(!iconIsDrag){
         $('#'+BUFF_VIEW_ID).css('display', 'block');
         $('.backWhite').css('display', 'block');
-        hideIcon();
+        //hideIcon();
         isBuffShow = 1;
     }
 }

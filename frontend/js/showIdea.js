@@ -1,18 +1,26 @@
 var ws;
 var currentPageIdeas = null;
 var currentDragId = null;
+var MAX_BLOCK_NUM = 21;
+var url;
 
 window.onload = function() {
     BUFF_VIEW_ID = "buff"; /*set buff.js global variable*/
+    getUrl();
     openWS();
 }
-
+function getUrl()
+{
+    url=window.location.toString();
+    url = url.split('/');
+    url = url[url.length-1];
+}
 function openWS(){
     if("WebSocket" in window) {
         console.log("browser support!");
         openBufferWS();
-        openShowIdeaWS();
         openLoginWS();
+        openShowIdeaWS();
     }
     else {
       console.log("browser don't support!");
@@ -22,13 +30,19 @@ function openShowIdeaWS() {
     ws = new WebSocket("ws://ideapool.kd.io:8080/showIdea");
     ws.onopen = function(e){
         console.log("success connected to /idea");
-        loadInfo();
+        if(url.match(/showIdea/g) == "showIdea")
+            loadInfo();
+        else if(url.match(/showMyIdea/g) == "showMyIdea")
+            loadMyInfo();
+        else
+            alert('gg!\n');
     }
     ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
         
         if(data.tar == "sendIdea"){
             currentPageIdeas = data.ideas; /* set a global var to be used in afterward times*/
+            $('.ideaBlock').css('display', 'none'); /* hide all blocks first*/
             for(var i in data.ideas){
                 var id = "idea_"+i.toString();
                 fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
@@ -46,12 +60,41 @@ function loadInfo(){
     };
     ws.send(JSON.stringify(data));
 }
-
-
+function loadMyInfo(){
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "loadMyInfo",
+        accessToken: accessToken
+    };
+    ws.send(JSON.stringify(data));
+}
+function clickRandIcon()
+{
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "loadRandInfo",
+        accessToken: accessToken,
+        url : url
+    };
+    ws.send(JSON.stringify(data));
+    startLoadingIcon(); /* in loader.js*/
+}
+function searchIdea(searchKey)
+{
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "searchIdea",
+        accessToken: accessToken,
+        searchKey : searchKey
+    };
+    ws.send(JSON.stringify(data));
+    startLoadingIcon(); /* in loader.js*/
+}
 function fillIdeaBlock(title, description, owner, img, id){
     var ideaBlock = document.getElementById(id);
     console.log(id);
     $(ideaBlock).empty();/*clear inside things*/
+    $(ideaBlock).css('display', 'block');
     
     var dom_title = document.createElement("div");
     $(dom_title).text(title);
@@ -200,6 +243,13 @@ function createLargeDiv(id)
     el2.id = "tmpLarge";
 
     el.parentNode.appendChild(el2);
+    $('#tmpLarge').click(function(){
+        var tmpId = id.replace("idea_", "");
+        tmpId = parseInt(tmpId);
+        var idea = currentPageIdeas[tmpId];
+        window.displayAnIdea.location.href='anIdea.html?id='+idea.id;
+        showAnIdea();  // in anIdea_parent.js
+    });
     return el2;
 }
 function del(id)
@@ -267,7 +317,6 @@ function makeDraggable()
     });
     $('.droppable').droppable({
         drop: function(){
-            alert('Dropped!');
             $('.draggable').attr('onmouseout', onMouseOut);
             $('.droppable').css('display', 'none');
             $('#trashCan').css('display', 'none');
@@ -276,6 +325,7 @@ function makeDraggable()
                 bufferIdea(currentDragId); /* this function is in buffer.js*/
             }
             currentDragId = null;
+            alert('Dropped!');
         }
     });
      $('#delLayer').droppable({

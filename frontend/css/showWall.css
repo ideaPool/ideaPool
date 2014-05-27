@@ -12,6 +12,9 @@ body {
 body::-webkit-scrollbar { 
   display: none; 
 }
+body::scrollbar { 
+  display: none; 
+}
 
 .wallIdeaBlock{
     position:absolute;
@@ -32,7 +35,28 @@ body::-webkit-scrollbar {
         margin:1%;
     }
     .wallIdeaBlock .wallIdea .wallIdeaTitle{
+        position:absolute;
         max-height:10%;
+        max-width:90%;
+        left: 0;
+    }
+    	.wallIdeaBlock .wallIdea .wallIdeaTitle::-webkit-scrollbar { 
+		    display: none; 
+		}
+        .wallIdeaBlock .wallIdea .wallIdeaTitle::scrollbar { 
+		    display: none; 
+		}
+    .wallIdeaBlock .wallIdea .delIdeaInWall{
+        position:absolute;
+        right:0;
+        width:30px;
+        height:30px;
+        background-color: rgba(10%, 10%, 10%, 0.3);
+        color:white;
+        font-size:0.5em;
+        text-align:center;
+        border-radius: 30px;
+        opacity: 0.6;
     }
     .wallIdeaBlock .wallIdea img{
         opacity:0.8;
@@ -44,6 +68,7 @@ body::-webkit-scrollbar {
         width:100%;
         bottom:0;
         margin:1%;
+        float: left;
     }
 
 #wallNav{
@@ -131,9 +156,7 @@ body::-webkit-scrollbar {
   width: 86%;
   height: 89%;
   background-color: #CC99CC;
-  // background-color: #FF9966 ;
-   border-radius: 30px;
-  //background-color: rgba(100%, 100%, 10%, 0.8);
+  border-radius: 30px;
 }
     .wallBlock .wallTitle{
         position: absolute;
