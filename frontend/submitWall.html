@@ -10,7 +10,7 @@
   <script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
   <script type="text/javascript" src="js/buffer.js"></script>
   <script type="text/javascript" src="js/login.js"></script>
-  <script type="text/javascript" src="js/submitIdea.js"></script>
+  <script type="text/javascript" src="js/submitWall.js"></script>
   <script>
     function hideSelf(){
       parent.hideSubmit();
@@ -18,15 +18,15 @@
   </script>
 </head>
 <body style="background-color:rgba(10%, 15%, 13%, 1); color:white;">
-  <h1>Submit Idea</h1>
+  <h1>Submit Wall</h1>
   <form>
     <p>
       Title<br>
-      <input id="title" type="text" name="title" placeholder="Idea title"></input>
+      <input id="title" type="text" name="title" placeholder="Wall title"></input>
     </p>
     <p>
       Description<br>
-      <textarea id="description" rows="10" cols="50" name="description" placeholder="Idea descriptions"></textarea>
+      <textarea id="description" rows="10" cols="50" name="description" placeholder="Wall descriptions"></textarea>
     </p>
     <p>
       Public / Private  <br>
@@ -34,10 +34,6 @@
       <label for="public">Public</label><br>
       <input id="private" type="radio" name="isPrivate" value="1"></input>
       <label for="private">Private</label>
-    </p>
-    <p>
-      Idea Image<br>
-      <input id="img" type="file" title="Choose a picture"></input>
     </p>
     <input type="button" value="Submit" onclick="clickSubmitButtom();"></input>
   </form>

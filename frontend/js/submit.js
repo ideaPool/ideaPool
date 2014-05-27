@@ -1,26 +1,26 @@
 var submitIdeaWs;
 
 window.onload = function() {
-  if("WebSocket" in window) {
-    opensubmitIdeaWs();
-  }
-  else {
-    alert("WebSocket is NOT supported by your browser!");
-  }
+    if("WebSocket" in window) {
+        opensubmitIdeaWs();
+    }
+    else {
+        alert("WebSocket is NOT supported by your browser!");
+    }
 }
 
 function opensubmitIdeaWs() {
-  submitIdeaWs = new WebSocket("submitIdeaWs://ideapool.kd.io:8080/submitIdea");
-  submitIdeaWs.onopen = function(e) {
-    console.log("success connected to /submitIdea");
-  };
-  submitIdeaWs.onmessage = function(e) {
-    var data = JSON.parse(e.data);
-    console.log(data);
-  };
-  submitIdeaWs.onclose = function(e) {
-    console.log("close connection with /submitIdea");
-  };
+    submitIdeaWs = new WebSocket("submitIdeaWs://ideapool.kd.io:8080/submitIdea");
+    submitIdeaWs.onopen = function(e) {
+        console.log("success connected to /submitIdea");
+    };
+    submitIdeaWs.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        console.log(data);
+    };
+    submitIdeaWs.onclose = function(e) {
+        console.log("close connection with /submitIdea");
+    };
 }
 
 function sendSubmit() {

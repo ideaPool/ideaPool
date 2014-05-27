@@ -84,6 +84,7 @@ function delIdeaInWall(wallId, ideaId)
         wallId: wallId,
         accessToken : accessToken
     };
+    startLoadingIcon();
     console.log("delIdeaInWall", wallId, ideaId);
     wallWs.send(JSON.stringify(data));
 }
@@ -95,6 +96,7 @@ function putIdeaInWall(wallId, ideaId){
         wallId: wallId,
         accessToken : accessToken
     };
+    startLoadingIcon();
     console.log("putIdeaInWall", wallId, ideaId);
     wallWs.send(JSON.stringify(data));
 }
@@ -170,9 +172,9 @@ function makeWallBlockDroppable()
                 idx = parseInt(idx);
                 var wall = currentPageWalls[idx];
                 putIdeaInWall(wall.id , curDragBuffId); 
+                alert("Dropped idea to wall! However, only dropping to U're wall would work!");
             }
             curDragBuffId = -1;
-            alert('Dropped idea to wall!');
         }
     });
 }

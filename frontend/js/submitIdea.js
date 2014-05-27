@@ -25,60 +25,60 @@ function opensubmitIdeaWs() {
 
 function sendSubmit() {
    
-  var file = document.getElementById("img").files[0];
-  var curUser = null;
-  var reader = new FileReader();
-
-  if( !parent.checkLogin() ){
-    alert('log in please!');
-    return;
-  }
-  else{
-      curUser = parent.getAccessToken();
-  }
-  
-
-
-  // Make sure the file exists and is an image
-  if(file && file.type.match("image")){
-      reader.readAsDataURL(file); 
-  }
-  else{
-    alert('no image chosen or wrong file type!');
-    return;
-  }
-  // Sends the result of the file read as soon as the reader has
-  // completed reading the image file.
-  reader.onloadend = function(){
-    console.log(document.getElementById("description").value);
+    var file = document.getElementById("img").files[0];
+    var curUser = null;
+    var reader = new FileReader();
     
-    newIdea = { 
-      title: document.getElementById("title").value,
-      description: document.getElementById("description").value,
-      privacy: getCheckedRadioId('isPrivate'),
-      img: reader.result
-    };
-    data = {
-      tar: "submitIdea",
-      idea: newIdea,
-      accessToken: curUser
-    }
-    if(!data.idea.title){
-        alert("there's no title!");
+    if( !parent.checkLogin() ){
+        alert('log in please!');
         return;
-    }
-    else if(!data.idea.privacy){
-        alert("there's no privacy setting!");
-        return;
-    }
-    if(data.idea.title && data.idea.description ) {
-      submitIdeaWs.send(JSON.stringify(data));
-      console.log("success send!");
     }
     else{
-      alert('please check your format again!');
+      curUser = parent.getAccessToken();
     }
-  };  
+    
+    
+    
+    // Make sure the file exists and is an image
+    if(file && file.type.match("image")){
+      reader.readAsDataURL(file); 
+    }
+    else{
+        alert('no image chosen or wrong file type!');
+        return;
+    }
+  // Sends the result of the file read as soon as the reader has
+  // completed reading the image file.
+    reader.onloadend = function(){
+        console.log(document.getElementById("description").value);
+        
+        newIdea = { 
+          title: document.getElementById("title").value,
+          description: document.getElementById("description").value,
+          privacy: getCheckedRadioId('isPrivate'),
+          img: reader.result
+        };
+        data = {
+          tar: "submitIdea",
+          idea: newIdea,
+          accessToken: curUser
+        };
+        if(!data.idea.title){
+            alert("there's no title!");
+            return;
+        }
+        else if(!data.idea.privacy){
+            alert("there's no privacy setting!");
+            return;
+        }
+        if(data.idea.title && data.idea.description ) {
+          submitIdeaWs.send(JSON.stringify(data));
+          console.log("success send!");
+        }
+        else{
+          alert('please check your format again!');
+        }
+    };  
 
 }
 

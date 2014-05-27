@@ -57,3 +57,10 @@ def delWall(wallId):
         ideaW.delete_insatnce()
     except ideaInWall.DoesNotExist:
         pass
+
+def getWallIdListByIdeaId(ideaId):
+    query = ideaInWall.select().where( ideaInWall.ideaId == ideaId ).order_by(ideaInWall.id.desc())
+    wallIdList = []
+    for i in query:
+        wallIdList.append(i.wallId)
+    return wallIdList

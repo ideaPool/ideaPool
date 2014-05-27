@@ -57,10 +57,10 @@ class WebSocketSubmitWallHandler(tornado.websocket.WebSocketHandler):
             wall = msg['wall']
             user = LOGIN.getFbUserInfo(msg['accessToken'])
             print user
-            newWall = WALL.create(wall["title"], wall["description"],user['name'], user['id'], wall["img"], wall["privacy"])
+            newWall = WALL.create(wall["title"], wall["description"], user['id'], wall["privacy"])
             # update latest idea to all clientss
             for client in showWallClients: 
-                client.loadInfo('getLatest')
+                client.loadWall('getLatest')
             print wall["description"]       
     def on_close(self):
         pass 
@@ -153,14 +153,14 @@ class WebSocketShowWallHandler(tornado.websocket.WebSocketHandler):
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             WALL.delWall(self.msg['wallId'], user['id']);
             print "delIdea!"
-            self.broadcast('getLatestIdea')
+            self.broadcast('getLatest')
         elif tar == "putIdeaInWall":
             print "put idea in wall!"
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             wall = WALL.getWallById(self.msg['wallId'])
             if wall is not None and wall.ownerId == user['id']:
                 IDEA_IN_WALL.add(self.msg['ideaId'], self.msg['wallId'])
-                self.broadcast('getLatestIdea')
+                self.broadcast('getLatest')
             else:
                 print "the wall might not be there or it's not Ur wall!"
         elif tar == "delIdeaInWall":
@@ -168,8 +168,8 @@ class WebSocketShowWallHandler(tornado.websocket.WebSocketHandler):
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             wall = WALL.getWallById(self.msg['wallId'])
             if wall is not None and wall.ownerId == user['id']:
-                IDEA_IN_WALL.delete(msg['ideaId'], self.msg['wallId'])
-                self.broadcast('getLatestIdea')
+                IDEA_IN_WALL.delete(self.msg['ideaId'], self.msg['wallId'])
+                self.broadcast('getLatest')
             else:
                 print "the wall might not be there or it's not Ur wall!"
                 
