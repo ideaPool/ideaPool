@@ -4,6 +4,3 @@ function showAnIdea(){
 function hideAnIdea(){
   $('#displayAnIdea').css('display', 'none');
 }
-$(document).ready(function(){
-  $('#buttonAnIdea').draggable();
-});

@@ -3,7 +3,7 @@ var iconIsDrag = 0;
 /* make icon draggable*/
 $( document ).ready(iconEnDrag());
 function iconEnDrag(){
-    console.log('buff en drag!');
+    console.log('icon en drag!');
     $(function() {
         var tmpOnclick;
         $( ".icon").draggable({
@@ -14,6 +14,7 @@ function iconEnDrag(){
                 
             },
             stop: function(event, ui){
+                
                 setTimeout(function(){iconIsDrag=0;}, 300);
             } 
         });

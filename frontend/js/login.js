@@ -53,7 +53,7 @@ function FBLogin(){
                 scope: 'email'
             });
         }
-    })
+    });
 }
 
 
@@ -62,6 +62,9 @@ function FBLogout(){
         // Person is now logged out
         currentUser = null;
         accessToken = null;
+        showFbLogin(); // in nav.js
+        hideMySpace();  // in nav.js
+        window.location.href="http://ideapool.kd.io/showIdea.html";
     });
 }
 
@@ -104,6 +107,8 @@ function setLogInfo(response)
     console.log("call loadBuffer!");
     checkAndSaveUser(response);
     loadBuffer(); /*from buffer.js*/
+    hideFbLogin(); // in nav.js
+    showMySpace(); // in nav.js
 }
 function checkLogin()
 {

@@ -18,8 +18,8 @@ function getUrl()
 function openWS(){
     if("WebSocket" in window) {
         console.log("browser support!");
-        openBufferWS();
         openLoginWS();
+        openBufferWS();
         openShowIdeaWS();
     }
     else {
@@ -44,6 +44,7 @@ function openShowIdeaWS() {
             currentPageIdeas = data.ideas; /* set a global var to be used in afterward times*/
             $('.ideaBlock').css('display', 'none'); /* hide all blocks first*/
             for(var i in data.ideas){
+                if(i >= MAX_BLOCK_NUM) break; 
                 var id = "idea_"+i.toString();
                 fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
             }
@@ -56,7 +57,8 @@ function openShowIdeaWS() {
 }
 function loadInfo(){
     var data = {
-        tar : "loadInfo"
+        tar : "loadInfo",
+        url : url //global var
     };
     ws.send(JSON.stringify(data));
 }
@@ -64,17 +66,19 @@ function loadMyInfo(){
     var accessToken = getAccessToken();
     var data = {
         tar : "loadMyInfo",
-        accessToken: accessToken
+        accessToken: accessToken,
+        url : url
     };
     ws.send(JSON.stringify(data));
 }
 function clickRandIcon()
 {
+    if(iconIsDrag) return;
     var accessToken = getAccessToken();
     var data = {
         tar : "loadRandInfo",
         accessToken: accessToken,
-        url : url
+        url : url //global var
     };
     ws.send(JSON.stringify(data));
     startLoadingIcon(); /* in loader.js*/
@@ -85,8 +89,26 @@ function searchIdea(searchKey)
     var data = {
         tar : "searchIdea",
         accessToken: accessToken,
-        searchKey : searchKey
+        searchKey : searchKey,
+        url : url //global var
     };
+    ws.send(JSON.stringify(data));
+    startLoadingIcon(); /* in loader.js*/
+}
+function delIdea(idea_id)
+{
+    var id = parseId(idea_id);
+    var idea = currentPageIdeas[id]; /* currentPageIdeas set in showIdea.js*/
+    
+    // getCurrentUser is in login.js
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "delIdea",
+        ideaId: idea.id,
+        accessToken : accessToken,
+        url : url //global var
+    };
+    console.log(data);
     ws.send(JSON.stringify(data));
     startLoadingIcon(); /* in loader.js*/
 }
@@ -279,8 +301,12 @@ function makeDraggable()
     var dragEl;
     $( ".draggable" ).draggable({
       helper: function() {
-        //debugger;
-        var tmp =  $(this).parent().find('img').clone();
+        var tmp;
+        console.log( "find img? : ", $(this).find('img') );
+        if( $(this).find('img').length>0 )
+            tmp =  $(this).find('img').clone();
+        else
+            tmp =  $(this).parent().find('img').clone();
         $(tmp.get(0)).css('z-index', '1010');
         $(tmp.get(1)).css('z-index', '1011');
         tmp.css('width', '160px');
@@ -325,7 +351,7 @@ function makeDraggable()
                 bufferIdea(currentDragId); /* this function is in buffer.js*/
             }
             currentDragId = null;
-            alert('Dropped!');
+            //alert('dropped!');
         }
     });
      $('#delLayer').droppable({
@@ -343,20 +369,4 @@ function makeDraggable()
             currentDragId = null;
         }
     });
-}
-
-function delIdea(idea_id)
-{
-    var id = parseId(idea_id);
-    var idea = currentPageIdeas[id]; /* currentPageIdeas set in showIdea.js*/
-    
-    // getCurrentUser is in login.js
-    var accessToken = getAccessToken();
-    var data = {
-        tar : "delIdea",
-        ideaId: idea.id,
-        accessToken : accessToken
-    };
-    console.log(data);
-    ws.send(JSON.stringify(data));
 }

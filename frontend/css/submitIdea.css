@@ -1,0 +1,39 @@
+.imgContainerAll{
+  position: absolute;
+  top: 15%;
+  left: 45%;
+  height: 75%;
+  width: 50%;
+}
+.imgContainerOuter{
+  position: absolute;
+  top: 13%;
+  left: 0%;
+  height: 77%;
+  width: 100%;
+  display: none;
+}
+.imgContainerInner{
+  position: absolute;
+  height: 50%;
+  width: 50%;
+}
+.imgTop{
+  top: 0%;
+}
+.imgBottom{
+  bottom: 0%;
+}
+.imgLeft{
+  left: 0%;
+}
+.imgRight{
+  right: 0%;
+}
+.imgLabel{
+  position: absolute;
+  top: 0%;
+  left: 10%;
+  height: 95%;
+  width: 90%;
+}

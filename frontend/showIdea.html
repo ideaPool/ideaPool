@@ -29,7 +29,7 @@
 	<!-- NAV --->
 	<nav id="nav">  
 		<ul>
-			<li><a href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
+			<li><a id="mySpaceLi" href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
 			    <div id="mySpace" >
         	        <dli><a href="showMyIdea.html">My Ideas</a></dli>
         	        <dli><a href="showMyWall.html">My Walls</a></dli>
@@ -38,7 +38,7 @@
 			</li>
 			<li><a href="showIdea.html">Ideas</a></li>
 			<li><a href="showWall.html">Walls</a></li>
-			<li><a href="#" onclick="FBLogin();">Login</a></li>
+			<li><a id="fbLoginLi" href="#" onclick="FBLogin();">Login</a></li>
 			<li id = "search">
 				<div id="tfheader" >
 					<input type="text" class="tftextinput" onchange="searchIdea(this.value)" name="q" size="21" maxlength="120">
@@ -50,7 +50,7 @@
 	
 	<!-- Submit page -->
     <div id="submitContainer" onclick="hideSubmit();">
-        <iframe id="submitPage" src="./submit.html" border="0" frameborder="0"></iframe>
+        <iframe id="submitPage" src="./submitIdea.html" border="0" frameborder="0"></iframe>
     </div>
     <div id="submitIcon" class="icon" onclick="showSubmit();">
         <div id="submitIconArrow" class="fa fa-upload"></div>

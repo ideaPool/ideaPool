@@ -200,8 +200,11 @@ body {
 	    color: #F8F8F8;
 	    font-size:1 em;
 	    max-height: 60%;
-		overflow: scroll; 
+		overflow: hidden; 
 	}
+	    .disp .description::-webkit{
+    		overflow: scroll !important; 
+    	}
 		.disp .description::-webkit-scrollbar { 
 		    display: none; 
 		}

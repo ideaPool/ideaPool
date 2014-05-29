@@ -1,6 +1,7 @@
 import database as db
 import peewee as pw
 import idea as IDEA
+import wall as WALL
 
 class ideaInWall(db.MySQLModel):
     id = pw.PrimaryKeyField()
@@ -10,20 +11,25 @@ class ideaInWall(db.MySQLModel):
     class Meta:
         db_table = 'ideaInWall'
 
-def add(ideaId, wallId):
+def add(ideaId, wallId, userId=None):
     try:
         tmp = ideaInWall.get(ideaInWall.wallId == wallId, ideaInWall.ideaId == ideaId)
     except ideaInWall.DoesNotExist:
-        ideaW = ideaInWall.create(wallId=wallId, ideaId=ideaId)
-        idea = IDEA.getIdeaById(ideaId)
-        if idea is not None:
-            idea.linkNum += 1
-            idea.save()
-            ideaW.save()
+        try:
+            wall = WALL.getWallById(wallId)
+            if wall.privacy == "public" or userId==wall.ownerId:
+                ideaW = ideaInWall.create(wallId=wallId, ideaId=ideaId)
+                idea = IDEA.getIdeaById(ideaId)
+                if idea is not None:
+                    idea.linkNum += 1
+                    idea.save()
+                    ideaW.save()
+        except WALL.wall.DoesNotExist:
+            print("saving to unexisting wall!")
         else:
-            print("saving unexisting idea error!!")
+            print("saving unexisting idea or private wall error!!")
         
-def delete(ideaId, wallId):
+def delete(ideaId, wallId, userId=None):
     try:
         tmp = ideaInWall.get( (ideaInWall.ideaId==ideaId) & (ideaInWall.wallId==wallId) )
         idea = IDEA.getIdeaById(ideaId)
@@ -53,10 +59,11 @@ def getAllWallIdea(wallId):
     
 def delWall(wallId):
     try:
-        ideaW = ideaInWall.get(ideaInWall.wallId == wallId)
-        ideaW.delete_insatnce()
+        ideaQuery = ideaInWall.select().where(ideaInWall.wallId == wallId)
+        for ideaW in ideaQuery:
+            ideaW.delete_instance()
     except ideaInWall.DoesNotExist:
-        pass
+        pass 
 
 def getWallIdListByIdeaId(ideaId):
     query = ideaInWall.select().where( ideaInWall.ideaId == ideaId ).order_by(ideaInWall.id.desc())

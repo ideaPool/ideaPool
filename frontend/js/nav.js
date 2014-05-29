@@ -1,4 +1,19 @@
-
+function showMySpace()
+{
+    $('#mySpaceLi').css('display', 'block');
+}
+function hideMySpace()
+{
+    $('#mySpaceLi').css('display', 'none');
+}
+function showFbLogin()
+{
+    $('#fbLoginLi').css('display', 'block');
+}
+function hideFbLogin()
+{
+    $('#fbLoginLi').css('display', 'none');
+}
 function showDownBar(barId)
 {
     var el = document.getElementById(barId);

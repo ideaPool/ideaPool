@@ -1,6 +1,8 @@
 import database as db
 import peewee as pw
+import random
 import ideaInWall as IDEA_IN_WALL
+import userLogTag as USER_LOG_TAG
 import idea as IDEA
 
 MAX_SHOW_NUM = 15
@@ -45,20 +47,63 @@ def getMyWalls(userId):
         cnt+=1
     return wallList
     
-def searchWalls(key):
-    ideaList = IDEA.searchIdeas(key)
-    key = key.join(('%', '%')) # made 'key' --> '%key%'
-    wallQuery = walls.select().where( (walls.title**key) | (walls.description**key)   ).order_by(walls.id.desc())
-    wallQuery = wallQuery.where(walls.privacy == 'public')
+def getRecomendWall(userId = None):
+    wallList = []
+    if userId is None:
+        wallList = getRandWall()
+        return wallList
+      
+    tagList = USER_LOG_TAG.getTagList(userId)
+    for tag in tagList:
+        tmpList = searchWalls(tag.tag)
+        for tmpWall in tmpList:
+            if tmpWall not in wallList:
+                wallList.append(tmpWall)
+    if len(wallList) < MAX_SHOW_NUM:
+        tmpList = getRandWall()
+        listLen = len(wallList)
+        cnt = 0
+        for tmpWall in tmpList:
+            if listLen + cnt > MAX_SHOW_NUM:
+                break
+            if tmpWall not in wallList:
+                wallList.append(tmpWall)
+                cnt += 1    
+    #random.shuffle(wallList)            
+    return wallList
+    
+def getRandWall():
+    wallQuery = walls.select().order_by( walls.id.desc() )
     wallList = []
     cnt = 0
-    for wall in wallQuery:
-        if cnt >= MAX_SHOW_NUM:
-            break
-        wallList.append(wall)
+    for w in wallQuery:
+        if cnt > MAX_SHOW_NUM:
+            if random.randint(0, 5) > 0:
+                continue
+        wallList.append(w)
         cnt+=1
-    # search by idea to wall
+    random.shuffle(wallList)
+    while cnt > MAX_SHOW_NUM:
+        wallList.pop()
+        cnt -= 1
     
+    return wallList
+    
+def searchWalls(searchKey, userId=None):
+    key = searchKey.join(('%', '%')) # made 'key' --> '%key%'
+    wallQuery = walls.select().where( (walls.title**key) | (walls.description**key)   ).order_by(walls.id.desc())
+    if userId is None:
+        wallQuery = wallQuery.where(walls.privacy == 'public')
+    else:
+        wallQuery = wallQuery.where(walls.ownerId == userId)
+    wallQuery.limit(MAX_SHOW_NUM)
+    wallList = []
+
+    for wall in wallQuery:
+        wallList.append(wall)
+        
+    # search by idea to wall
+    ideaList = IDEA.searchIdeas(searchKey)
     for idea in ideaList:
         wallIdList = IDEA_IN_WALL.getWallIdListByIdeaId(idea.id)
         for wid in wallIdList:

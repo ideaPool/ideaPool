@@ -5,24 +5,20 @@
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
   <title>Idea Pool</title>
   <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link type="text/css" href="css/submitIdea.css" rel="stylesheet" />
   <script src="js/jquery-1.11.0.min.js"></script>
   <script src="js/jquery-ui.js"></script>
   <script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
   <script type="text/javascript" src="js/buffer.js"></script>
   <script type="text/javascript" src="js/login.js"></script>
   <script type="text/javascript" src="js/submitIdea.js"></script>
-  <script>
-    function hideSelf(){
-      parent.hideSubmit();
-    }
-  </script>
 </head>
 <body style="background-color:rgba(10%, 15%, 13%, 1); color:white;">
   <h1>Submit Idea</h1>
   <form>
     <p>
       Title<br>
-      <input id="title" type="text" name="title" placeholder="Idea title"></input>
+      <input id="title" type="text" name="title" placeholder="Idea title" onchange="hideImg(); getImg(this.value); setTimeout(showImg, 1000);"></input>
     </p>
     <p>
       Description<br>
@@ -35,10 +31,33 @@
       <input id="private" type="radio" name="isPrivate" value="1"></input>
       <label for="private">Private</label>
     </p>
-    <p>
-      Idea Image<br>
-      <input id="img" type="file" title="Choose a picture"></input>
-    </p>
+    <div class="imgContainerAll">
+      <div>
+        Idea Image<br>
+      </div>
+      <label for="imgFile"><div>
+        <input id="imgFile" type="radio" name="chooseImg" value="4" checked></input>
+        <input id="img" type="file" title="Choose a picture"></input>
+      </div></label>
+      <div class="imgContainerOuter">
+        <div id="imgContainerInner0" class="imgContainerInner imgTop imgLeft">
+          <input id="img0" type="radio" name="chooseImg" value="0"></input>
+          <label id="imgBlock0" class="imgLabel" for="img0"></label>
+        </div>
+        <div id="imgContainerInner1" class="imgContainerInner imgTop imgRight">
+          <input id="img1" type="radio" name="chooseImg" value="1"></input>
+          <label id="imgBlock1" class="imgLabel" for="img1"></label>
+        </div>
+        <div id="imgContainerInner2" class="imgContainerInner imgBottom imgLeft">
+          <input id="img2" type="radio" name="chooseImg" value="2"></input>
+          <label id="imgBlock2" class="imgLabel" for="img2"></label>
+        </div>
+        <div id="imgContainerInner3" class="imgContainerInner imgBottom imgRight">
+          <input id="img3" type="radio" name="chooseImg" value="3"></input>
+          <label id="imgBlock3" class="imgLabel" for="img3"></label>
+        </div>
+      </div>
+    </div>
     <input type="button" value="Submit" onclick="clickSubmitButtom();"></input>
   </form>
 </body>

@@ -11,6 +11,7 @@ from lib import ideaBuffer as IDEA_BUFFER
 from lib import ideaInWall as IDEA_IN_WALL
 from lib import userLogTag as USER_LOG_TAG
 
+
 loginClients = {}
 showIdeaClients = []
 showWallClients = []
@@ -78,11 +79,21 @@ class WebSocketShowIdeaHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):        
         self.msg = json.loads(message)
+        print self.msg
+        if "showIdea" in self.msg['url']:
+            self.dealShowIdea()
+        elif "showMyIdea" in self.msg['url']:
+            self.dealShowMyIdea()
+        else:
+            print("404 error!")
+        
+    def on_close(self):
+        showIdeaClients.remove(self)
+    
+    def dealShowIdea(self):
         tar = self.msg['tar']
         if tar == "loadInfo" :
             self.loadInfo('getLatest')
-        elif tar == "loadMyInfo":
-            self.loadInfo('self')
         elif tar == "loadRandInfo":
             self.loadInfo('rand')
         elif tar == "searchIdea":
@@ -91,12 +102,25 @@ class WebSocketShowIdeaHandler(tornado.websocket.WebSocketHandler):
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             IDEA.delIdea(self.msg['ideaId'], user['id']);
             print "delIdea!"
-            for client in showIdeaClients: 
-                client.loadInfo('getLatest')
-        
-    def on_close(self):
-        showIdeaClients.remove(self)
-        
+            self.broadcast('getLatest')
+    
+    def dealShowMyIdea(self):
+        tar = self.msg['tar']
+        if tar == "loadMyInfo" :
+            self.loadInfo('self')
+        elif tar == "loadRandInfo":
+            self.loadInfo('selfRand')
+        elif tar == "searchIdea":
+            self.loadInfo('selfSearch')
+        elif tar == "delIdea":
+            user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+            IDEA.delIdea(self.msg['ideaId'], user['id']);
+            print "delIdea!"
+            self.broadcast('self')
+            
+    def broadcast(self, algo):
+        for client in showIdeaClients: 
+                client.loadInfo(algo)
     def loadInfo(self, algo):
         ideaList = []
         if algo == "getLatest":
@@ -105,22 +129,31 @@ class WebSocketShowIdeaHandler(tornado.websocket.WebSocketHandler):
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             ideaList = IDEA.getMyIdeas(user['id'])
         elif algo == "rand":
-            user = LOGIN.getFbUserInfo(self.msg['accessToken'])
-            if "showMyIdea" in self.msg['url']:
-                ideaList = IDEA.getRandMyIdeas(user['id'])
+            user = None;
+            if self.msg['accessToken'] is not None: 
+                user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+            lottery = random.randint(0, 10)
+            if lottery == 0:
+                ideaList = IDEA.getRandIdeas()
+            elif lottery == 1 or user is None:
+                ideaList = IDEA.getHottestIdeas()
             else:
-                lottery = random.randint(0, 5)
-                if lottery == 0:
-                    ideaList = IDEA.getRandIdeas()
-                elif lottery == 1:
-                    ideaList = IDEA.getHottestIdeas()
-                else:
-                    user = LOGIN.getFbUserInfo(self.msg['accessToken'])
-                    ideaList = IDEA.getRecommendIdeas(user['id'])
+                user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+                ideaList = IDEA.getRecommendIdeas(user['id'])
+        elif algo == "selfRand":
+            user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+            ideaList = IDEA.getRandIdeas(user['id'])
         elif algo == "search":
             key = self.msg['searchKey']
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             ideaList = IDEA.searchIdeas(self.msg['searchKey'])
+            if key :
+                print "add userLogTag : ", key
+                USER_LOG_TAG.add(user['id'], key)
+        elif algo == "selfSearch":
+            key = self.msg['searchKey']
+            user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+            ideaList = IDEA.searchIdeas(self.msg['searchKey'], user['id'])
             if key :
                 print "add userLogTag : ", key
                 USER_LOG_TAG.add(user['id'], key)
@@ -153,25 +186,49 @@ class WebSocketShowWallHandler(tornado.websocket.WebSocketHandler):
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             WALL.delWall(self.msg['wallId'], user['id']);
             print "delIdea!"
-            self.broadcast('getLatest')
+            if "showWall" in self.msg['url']:
+                self.broadcast('getLatest')
+            else:
+                self.broadcast('self')
         elif tar == "putIdeaInWall":
             print "put idea in wall!"
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             wall = WALL.getWallById(self.msg['wallId'])
-            if wall is not None and wall.ownerId == user['id']:
-                IDEA_IN_WALL.add(self.msg['ideaId'], self.msg['wallId'])
-                self.broadcast('getLatest')
+            if wall is not None :
+                IDEA_IN_WALL.add(self.msg['ideaId'], self.msg['wallId'], user['id'])
             else:
                 print "the wall might not be there or it's not Ur wall!"
+            if "showWall" in self.msg['url']:
+                self.broadcast('getLatest')
+            else:
+                self.broadcast('self')
         elif tar == "delIdeaInWall":
             print "del idea in wall!"
             user = LOGIN.getFbUserInfo(self.msg['accessToken'])
             wall = WALL.getWallById(self.msg['wallId'])
             if wall is not None and wall.ownerId == user['id']:
                 IDEA_IN_WALL.delete(self.msg['ideaId'], self.msg['wallId'])
-                self.broadcast('getLatest')
             else:
                 print "the wall might not be there or it's not Ur wall!"
+            if "showWall" in self.msg['url']:
+                self.broadcast('getLatest')
+            else:
+                self.broadcast('self')
+        elif tar == "updateDescription":
+            user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+            wall = WALL.getWallById(self.msg['wall']['id'])
+            if wall.privacy=="public" or wall.ownerId == user['id']:
+                wall.description = self.msg['wall']['description']
+                wall.save()
+                print "wall updated! ", self.msg['wall']['description']
+            else:
+                print ("U have no auth")
+            if "showWall" in self.msg['url']:
+                self.broadcast('getLatest')
+            else:
+                self.broadcast('self')
+        elif tar == "loadRandWall":
+            self.loadWall('rand')
                 
     def on_close(self):
         showWallClients.remove(self)
@@ -181,6 +238,7 @@ class WebSocketShowWallHandler(tornado.websocket.WebSocketHandler):
                 client.loadWall(algo)
     
     def loadWall(self, algo):
+        wallList = []
         if algo == "getLatest":
             wallList = WALL.getLatestWalls()
         elif algo == "self":
@@ -189,6 +247,15 @@ class WebSocketShowWallHandler(tornado.websocket.WebSocketHandler):
         elif algo == "search":
             wallList = WALL.searchWalls(self.msg['searchKey'])
             print "search wall done!"
+        elif algo == "rand":
+            if self.msg['accessToken'] is None:
+                wallList = WALL.getRecomendWall()
+            else:
+                user = LOGIN.getFbUserInfo(self.msg['accessToken'])
+                wallList = WALL.getRecomendWall(user['id'])
+        else:
+            print "wrong algo"
+            
         self.msg = {'tar':"sendWall", 'walls': [], 'algo':algo }
         for wall in wallList:
             wallMsg = WALL.createWallMsg(wall)

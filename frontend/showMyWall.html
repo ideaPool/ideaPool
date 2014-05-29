@@ -8,6 +8,7 @@
     <link type="text/css" href="css/showWall.css" rel="stylesheet" />
     <link type="text/css" href="css/nav.css" rel="stylesheet" />
     <link type="text/css" href="css/loader.css" rel="stylesheet" />
+    <link type="text/css" href="css/submit.css" rel="stylesheet" />
     <script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/jquery-ui.js"></script>
@@ -18,26 +19,27 @@
 	<script type="text/javascript" src="js/loader.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
     <script type="text/javascript" src="js/buffer.js"></script>
+    <script type="text/javascript" src="js/submitWall.js"></script>
     <script type="text/javascript" src="js/showWall.js"></script>
-    
+    <script type="text/javascript" src="js/anIdea_parent.js"></script>
 </head>
 <body>
 	<!-- NAV --->
 	<nav id="nav">  
 		<ul>
-			<li><a href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
+			<li><a id="mySpaceLi" href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
 			    <div id="mySpace" >
-        	         <dli><a href="showMyIdea.html">My Ideas</a></dli>
+        	        <dli><a href="showMyIdea.html">My Ideas</a></dli>
         	        <dli><a href="showMyWall.html">My Walls</a></dli> 
         	        <dli><a href="#" onclick="FBLogout();">Logout</a></dli>
         	    </div>
 			</li>
 			<li><a href="showIdea.html">Ideas</a></li>
 			<li><a href="showWall.html">Walls</a></li>
-			<li><a href="#" onclick="FBLogin();">Login</a></li>
+			<li><a id="fbLoginLi" href="#" onclick="FBLogin();">Login</a></li>
 			<li id = "search">
 				<div id="tfheader" >
-					<input type="text" class="tftextinput" name="q" size="21" maxlength="120">
+					<input type="text" class="tftextinput" onchange="searchWall(this.value)" name="q" size="21" maxlength="120">
 					<i class="fa fa-search fa-fw"></i>
 				</div>
 			</li>
@@ -61,9 +63,29 @@
   <!-- buffer for walls -->
   <div id="wallBuffer" style="display:none;"></div>
   
+  <!-- an idea -->
+  <iframe id="displayAnIdea" name="displayAnIdea" border="0" frameborder="0" style="position:fixed; left:0%; top:0%; height:100%; width:100%; z-index:100001; display:none;"></iframe>
+  
   <!-- display layer -->
   <div class="droppable" id="drop"></div>
   <div class="backGray" ></div>
+  
+  <!-- Submit page -->
+    <div id="submitContainer" onclick="hideSubmit();">
+        <iframe id="submitPage" src="./submitWall.html" border="0" frameborder="0"></iframe>
+    </div>
+    <div id="submitIcon" class="icon" onclick="showSubmit();">
+        <div id="submitIconArrow" class="fa fa-upload"></div>
+    </div>
+  <!-- wall discription update -->
+    <div id='updateWallDscrpt' onclick="hideUpdateDscpt()" style="display:none; position:fixed; width:100%; height:100%; top:0; left:0; background-color:rgba(255, 255, 255, 0.5);">
+    </div>    
+    <div id='updateWallDscrptTextOuter' style="display:none; position:fixed; width:50%; height:40%; top:20%; left:25%; background-color:rgba(10%, 15%, 10%, 0.8)">
+        <h style="text-align:center;">Update Wall description:</h>
+        <textarea id='updateDscrptText' rows="10" cols="50" type='text' placeholder="" style="position:absolute; left:20%; top:20%; max-height:70%; max-width:80%;"></textarea>
+        <input type="button" id='wallUpdateButton' style="position:absolute; right:3%; bottom:3%;" value="Update"></input>
+    </div>
+  
   
   <!-- <div id="blocker"></div> -->
   
@@ -103,7 +125,10 @@
 	<div id="buffIcon" class="buffIcon icon" onclick="clickBuffIcon()">
 	    <h style="position:absolute; left:15%; top: 20%;">Buff</h>
 	</div>    
-  
+    <!--- Random Icon --->
+	<div id="randIcon" class="randIcon icon" onclick="clickRandIcon()">
+	    <i class="fa fa-random fa-2x" style="position:absolute; left:15%; bottom: 12%;" ></i>
+	</div>
     <!--- loading animation --->
 	<div class = "loader">
     	<div class="windows8">

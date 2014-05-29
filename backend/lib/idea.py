@@ -2,6 +2,7 @@ import database as db
 import peewee as pw
 import userLogTag as USER_LOG_TAG
 import random
+import os
 import time
 
 IMG_DIR = "../ideaPoolData/ideaImg/"
@@ -29,6 +30,8 @@ def delIdea(ideaId, userId):
         idea = ideas.get( (ideas.id==ideaId) & (ideas.ownerId==userId) )
         if idea.linkNum == 1:
             idea.delete_instance()
+            imgPath = IMG_DIR + "idea_" + str(idea.id) + ".txt"
+            os.remove(imgPath)
         else:
             idea.linkNum -= 1
             idea.owner = 'Public'
@@ -79,9 +82,14 @@ def getRecommendIdeas(userId):
                 ideaList.append(tmpIdea)
     if len(ideaList) < NUM_OF_BLOCKS:
         tmpList = getHottestIdeas()
+        listLen = len(ideaList)
+        cnt = 0
         for tmpIdea in tmpList:
+            if cnt + listLen > NUM_OF_BLOCKS:
+                break
             if tmpIdea not in ideaList:
                 ideaList.append(tmpIdea)
+                cnt += 1
     random.shuffle(ideaList)            
     return ideaList
     
@@ -101,8 +109,12 @@ def getRandMyIdeas(userId):
         cnt -= 1
     return ideaList
 
-def getRandIdeas():
-    ideaQuery = ideas.select().where(ideas.privacy=="public").order_by(ideas.id.desc())
+def getRandIdeas(userId=None):
+    ideaQuery = ideas.select().order_by(ideas.id.desc())
+    if userId is None:
+        ideaQuery = ideaQuery.where(ideas.privacy=="public")
+    else:
+        ideaQuery = ideaQuery.where(ideas.ownerId==userId)
     ideaList = []
     cnt = 0
     for idea in ideaQuery:
@@ -117,17 +129,27 @@ def getRandIdeas():
         cnt -= 1
     return ideaList
     
-def getHottestIdeas():
-    ideaQuery = ideas.select().where(ideas.privacy=="public").order_by(ideas.linkNum.desc()).order_by(ideas.id.desc()).limit(NUM_OF_BLOCKS)
+def getHottestIdeas(userId=None):
+    ideaQuery = ideas.select().order_by(ideas.linkNum.desc()).order_by(ideas.id.desc())
+    if userId is None:
+        ideaQuery = ideaQuery.where(ideas.privacy=="public")
+    else:
+        ideaQuery = ideaQuery.where(ideas.ownerId == userId)
+    ideaQuery.limit(NUM_OF_BLOCKS)
     ideaList = []
     for idea in ideaQuery:
         ideaList.append(idea)
+    random.shuffle(ideaList)
     return ideaList
     
-def searchIdeas(key):
+def searchIdeas(key, userId=None):
     key = key.join(('%', '%')) # made 'key' --> '%key%'
     ideaQuery = ideas.select().where( (ideas.title**key) | (ideas.description**key) | (ideas.owner**key)  ).order_by(ideas.id.desc())
-    ideaQuery = ideaQuery.where(ideas.privacy == 'public')
+    if userId is None:
+        ideaQuery = ideaQuery.where(ideas.privacy == 'public')
+    else:
+        ideaQuery = ideaQuery.where(ideas.ownerId == userId )
+        
     ideaList = []
     cnt = 0
     for idea in ideaQuery:
