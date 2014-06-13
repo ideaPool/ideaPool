@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<?xml version="1.0" encoding="UTF-8" ?>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>Idea Pool</title>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link type="text/css" href="css/showWall.css" rel="stylesheet" />
+    <link type="text/css" href="css/nav.css" rel="stylesheet" />
+    <link type="text/css" href="css/loader.css" rel="stylesheet" />
+    <link type="text/css" href="css/submit.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://connect.facebook.net/zh_TW/all.js"></script>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css" /> 
+    <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+    <script type="text/javascript" src="js/icon.js"></script>
+    <script type="text/javascript" src="js/nav.js"></script>
+	<script type="text/javascript" src="js/loader.js"></script>
+	<script type="text/javascript" src="js/login.js"></script>
+    <script type="text/javascript" src="js/buffer.js"></script>
+    <script type="text/javascript" src="js/submitWall.js"></script>
+    <script type="text/javascript" src="js/showWall.js"></script>
+    <script type="text/javascript" src="js/anIdea_parent.js"></script>
+</head>
+<body>
+	<!-- NAV --->
+	<nav id="nav">  
+		<ul>
+			<li><a id="mySpaceLi" href="#" onmouseover="showDownBar('mySpace')" onmouseout="hideDownBar('mySpace')">My Space</a>
+			    <div id="mySpace" >
+        	        <dli><a href="showMyIdea.html">My Ideas</a></dli>
+        	        <dli><a href="showMyWall.html">My Walls</a></dli> 
+        	        <dli><a href="#" onclick="FBLogout();">Logout</a></dli>
+        	    </div>
+			</li>
+			<li><a href="showIdea.html">Ideas</a></li>
+			<li><a href="showWall.html">Walls</a></li>
+			<li><a id="fbLoginLi" href="#" onclick="FBLogin();">Login</a></li>
+			<li id = "search">
+				<div id="tfheader" >
+					<input type="text" class="tftextinput" onchange="searchWall(this.value)" name="q" size="21" maxlength="120">
+					<i class="fa fa-search fa-fw"></i>
+				</div>
+			</li>
+		</ul>
+	</nav>
+	
+  <!-- nav for walls -->
+  <div id="wallNav">
+    <div class="wnbContainer"></div>
+    <div class="wnbContainer">
+      <div class="wallNavButton" onclick="goToByScroll('wb0')"></div>
+    </div>
+    <div class="wnbContainer">
+      <div class="wallNavButton" onclick="goToByScroll('wb1')"></div>
+    </div>
+    <div class="wnbContainer">
+      <div class="wallNavButton" onclick="goToByScroll('wb2')"></div>
+    </div>
+  </div>
+  
+  <!-- buffer for walls -->
+  <div id="wallBuffer" style="display:none;"></div>
+  
+  <!-- an idea -->
+  <iframe id="displayAnIdea" name="displayAnIdea" border="0" frameborder="0" style="position:fixed; left:0%; top:0%; height:100%; width:100%; z-index:100001; display:none;"></iframe>
+  
+  <!-- display layer -->
+  <div class="droppable" id="drop"></div>
+  <div class="backGray" ></div>
+  
+  <!-- Submit page -->
+    <div id="submitContainer" onclick="hideSubmit();">
+        <iframe id="submitPage" src="./submitWall.html" border="0" frameborder="0"></iframe>
+    </div>
+    <div id="submitIcon" class="icon" onclick="showSubmit();">
+        <div id="submitIconArrow" class="fa fa-upload"></div>
+    </div>
+  <!-- wall discription update -->
+    <div id='updateWallDscrpt' onclick="hideUpdateDscpt()" style="display:none; position:fixed; width:100%; height:100%; top:0; left:0; background-color:rgba(255, 255, 255, 0.5);">
+    </div>    
+    <div id='updateWallDscrptTextOuter' style="display:none; position:fixed; width:50%; height:40%; top:20%; left:25%; background-color:rgba(10%, 15%, 10%, 0.8)">
+        <h style="text-align:center;">Update Wall description:</h>
+        <textarea id='updateDscrptText' rows="10" cols="50" type='text' placeholder="" style="position:absolute; left:20%; top:20%; max-height:70%; max-width:80%;"></textarea>
+        <input type="button" id='wallUpdateButton' style="position:absolute; right:3%; bottom:3%;" value="Update"></input>
+    </div>
+  
+  
+  <!-- <div id="blocker"></div> -->
+  
+    <div id = "allWalls">
+        <div class="wallBlockContainer" id="wb0">
+            <div class="wallBlock">
+                <div class="delWall"> X </div>
+                <div class="wallTitle"> Wall Title</div>
+                <div class="wallDscrpt scroll-pane">  <p>This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD This is the description part of the wall. And this is just an example XDD</p> </div>
+                <i onclick="clickRight(this);" class="fa fa-angle-right fa-2x" id="click-r" style="position:absolute; bottom:20%; right:3%; z-index:99;"></i>
+        	    <i onclick="clickLeft(this);" class="fa fa-angle-left fa-2x" id="click-l" style="position:absolute; bottom:20%; left:3%; z-index:99; " ></i>
+                <div class="wallIdeaBlock" id='wb1_idea'>
+                    <div class="wallIdea" style="left:0%;">
+                        <div class="wallIdeaTitle">title</div>
+                        <img src="http://gearheads.org/wp-content/uploads/2012/10/omg1.jpg">
+                    </div>
+                    <div class="wallIdea" style="left:25%;">
+                        <div class="wallIdeaTitle">title2</div>
+                        <img src="http://static.planetminecraft.com/files/resource_media/screenshot/1226/OMG_2725489.jpg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wallBlockContainer" id="wb1">
+            <div class="wallBlock">
+                <div class="wallTitle"> You Have No Wall now !</div>
+            </div>
+        </div>
+        <div class="wallBlockContainer" id="wb2">
+            <div class="wallBlock">
+                <div class="wallTitle"> You Have No Wall now !</div>
+            </div>
+        </div>
+    </div>
+    
+    <!--- Buffer Icon --->
+	<div id="buffIcon" class="buffIcon icon" onclick="clickBuffIcon()">
+	    <h style="position:absolute; left:15%; top: 20%;">Buff</h>
+	</div>    
+    <!--- Random Icon --->
+	<div id="randIcon" class="randIcon icon" onclick="clickRandIcon()">
+	    <i class="fa fa-random fa-2x" style="position:absolute; left:15%; bottom: 12%;" ></i>
+	</div>
+    <!--- loading animation --->
+	<div class = "loader">
+    	<div class="windows8">
+    	    <h>LOADING...</h>
+    	    <br><br>
+            <div class="wBall" id="wBall_1">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_2">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_3">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_4">
+                <div class="wInnerBall"></div>
+            </div>
+            <div class="wBall" id="wBall_5">
+                <div class="wInnerBall"></div>
+            </div>
+        </div> 
+	</div>
+  
+</body>
+</html>
+

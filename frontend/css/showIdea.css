@@ -1,0 +1,240 @@
+@charset "UTF-8";
+
+body {
+	font-size: 18px;
+	font-family: Arial,Helvetica,sans-serif,'Open Sans', sans-serif;
+	line-height: 1.85em;
+	color: #888;
+	font-weight: 300;
+	overflow:hidden;
+}
+.backGray{
+    position:fixed;
+    background-color: rgba(10%, 10%, 10%, 0.9);
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    z-index:1000;
+    display:none;
+}
+
+.backWhite{
+    position:fixed;
+    background-color: #F0F0F0 ;
+    opacity: 0.6;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    z-index:1000;
+    display:none;
+}
+
+.side-cover{
+	position:fixed;
+	background-color: rgba(255, 255, 255, 0.5);
+	z-index: 100;
+	top:0;
+	height:100%;
+	width:10%;
+}
+.right{
+	right:0;
+}
+.left{
+	left:0;
+}
+
+.droppable{
+    background-color:red;
+    display:none;
+    position:fixed;
+    right:0px;
+    top:0px;
+    width:15%;
+    height:100%;
+    opacity:0.7;
+    color: #383838  ;
+    z-index:1005;
+}
+
+.moveLeftToRight{
+    z-index:10000 !important;
+    -webkit-animation: moveLeftToRight 3s; /* Chrome, Safari, Opera */
+    animation: moveLeftToRight 3s;
+}
+ /* Chrome, Safari, Opera */
+@-webkit-keyframes moveLeftToRight
+{
+    0% {right: 95%;}
+    100% {right:15%;}
+}
+
+/* Standard syntax */
+@keyframes moveLeftToRight
+{
+    0% {right: 95%;}
+    100% {right:15%; }
+}
+#buff{
+    overflow:scroll;
+    background-color:rgba(13%, 20%, 10%, 0.8);
+    display:none;
+    position:fixed;
+    right:0px;
+    top:0%;
+    width:20%;
+    height:100%;
+    opacity:0.9;
+    z-index:1005;
+    font-size:1.7em;
+    color:#D0D0D0 ;
+}
+    #buff .buffView{
+        width:90%;
+        height:23%;
+        padding:5%;
+    }
+        #buff .buffView .title{
+            font-size:1em;
+            max-height:1.3em;
+            z-index:100005;
+            overflow :hidden;
+        }
+        #buff .buffView .del{
+            font-size:0.6em;
+            float : right;
+        }
+        #buff .buffView img{
+            width:73%;
+            height:73%; 
+            z-index:100005;
+            float:left;
+        }
+.jspTrack
+{
+    background: #C0C0C0  !important; 
+    position: relative;
+}
+ 
+.jspDrag
+{
+    background: #787878 !important; 
+    position: relative;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}        
+#buffIcon{
+    position: fixed;
+    opacity:0.9;
+    width: 50px;
+    height: 50px;
+    z-index: 10005;
+    left:3%;
+    bottom:15%;
+    background-color: #606060 ;
+    color: white;
+	border-radius: 50px;	/* 高度 */
+}
+
+#randIcon{
+    position: fixed;
+    opacity:0.9;
+    width: 50px;
+    height: 50px;
+    z-index: 10005;
+    left:3%;
+    bottom:25%;
+    background-color: #606060 ;
+    color: white;
+	border-radius: 50px;	/* 高度 */
+}
+.createLarge{
+	opacity : 1;
+	z-index : 1006;
+	background-color: red;
+	margin:0.15%;
+}
+/*.ui-draggable-dragging{
+    position:absolute;
+    width:50px !important;
+    height:50px !important;
+    border-style: solid;
+	background-color: rgba(100%, 100%, 10%, 0.8);
+}*/
+#disp{
+	position: absolute;
+	top: 15%;
+	height:70%;
+	width:240%;
+}
+	.disp .one-page{
+		float:left;
+		width:33.3%;
+		height:100%;
+	}
+	.disp .ideaBlock{
+		position:relative;
+		overflow:hidden;
+		display:none;
+		background-color: rgba(10%, 10%, 10%, 0.7);
+		margin:0.15%;
+		z-index: 10;
+	}
+	.disp .ideaBlock:hover{
+		opacity:0;
+	}
+	.disp .title{
+	    margin-top: 3%;
+	    color: #F8F8F8;
+	    font-size: 2.5em;
+	}
+	.disp .owner{
+	    margin: 1%;
+	    color: #F8F8F8;
+	    font-size: 1.5em;
+	}
+	.disp .description{
+	    color: #F8F8F8;
+	    font-size:1 em;
+	    max-height: 60%;
+		overflow: hidden; 
+	}
+	    .disp .description::-webkit{
+    		overflow: scroll !important; 
+    	}
+		.disp .description::-webkit-scrollbar { 
+		    display: none; 
+		}
+        .disp .description::scrollbar { 
+		    display: none; 
+		}
+
+	.xs{
+		width:14%;
+		height:22%;
+	}
+	.s{
+		width:22%;
+		height:32%;
+	}
+	.m{
+		width:33%;
+		height:48%;
+	}
+	.l{
+		width:44%;
+		height:64%;
+	}
+	.xl{
+		width:66%;
+		height:75%;
+	}
+	.float_r{
+		float:right;
+	}
+	.float_l{
+		float:left;
+	}

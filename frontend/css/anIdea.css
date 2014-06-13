@@ -1,0 +1,57 @@
+.anIdeaContainer{
+  
+}
+.anIdeaBackground{
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+}
+.anIdeaInnerContainer{
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  height: 80%;
+  width: 80%;
+  background-color: rgba(10%, 15%, 13%, 1);
+  color: white;
+  z-index: 2;
+}
+.anIdeaInnerContainer .anIdeaTitle{
+  position: absolute;
+  top:10%;
+  left:10%;
+  font-size: 2.5em;
+  font-weight: bold;
+  word-break:keep-all;
+}
+.anIdeaInnerContainer .anIdeaAuthor{
+  position: absolute;
+  top:25%;
+  left:10%;
+  font-size: 1.3em;
+  font-weight: bold;
+  word-break:keep-all;
+}
+.anIdeaInnerContainer .anIdeaImg{
+  position: absolute;
+  top: 5%;
+  right: 10%;
+  height: 30%;
+}
+.anIdeaInnerContainer .anIdeaDscrpt{
+  position: absolute;
+  top: 40%;
+  left: 10%;
+  width: 80%;
+  height: 50%;
+  text-align: left;
+  font-size: 1.3em;
+  word-break: keep-all;
+  word-wrap: break-word;
+  overflow: auto;
+  overflow-x: hidden;
+}

@@ -1,0 +1,372 @@
+var ws;
+var currentPageIdeas = null;
+var currentDragId = null;
+var MAX_BLOCK_NUM = 21;
+var url;
+
+window.onload = function() {
+    BUFF_VIEW_ID = "buff"; /*set buff.js global variable*/
+    getUrl();
+    openWS();
+}
+function getUrl()
+{
+    url=window.location.toString();
+    url = url.split('/');
+    url = url[url.length-1];
+}
+function openWS(){
+    if("WebSocket" in window) {
+        console.log("browser support!");
+        openLoginWS();
+        openBufferWS();
+        openShowIdeaWS();
+    }
+    else {
+      console.log("browser don't support!");
+    }
+}
+function openShowIdeaWS() {
+    ws = new WebSocket("ws://ideapool.kd.io:8080/showIdea");
+    ws.onopen = function(e){
+        console.log("success connected to /idea");
+        if(url.match(/showIdea/g) == "showIdea")
+            loadInfo();
+        else if(url.match(/showMyIdea/g) == "showMyIdea")
+            loadMyInfo();
+        else
+            alert('gg!\n');
+    }
+    ws.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        
+        if(data.tar == "sendIdea"){
+            currentPageIdeas = data.ideas; /* set a global var to be used in afterward times*/
+            $('.ideaBlock').css('display', 'none'); /* hide all blocks first*/
+            for(var i in data.ideas){
+                if(i >= MAX_BLOCK_NUM) break; 
+                var id = "idea_"+i.toString();
+                fillIdeaBlock(data.ideas[i].title, data.ideas[i].description, data.ideas[i].owner, data.ideas[i].img, id);
+            }
+            closeLoadingIcon(); /* in loader.js*/
+        }
+    }; 
+    ws.onclose = function(e) {
+        openShowIdeaWS();
+    }; 
+}
+function loadInfo(){
+    var data = {
+        tar : "loadInfo",
+        url : url //global var
+    };
+    ws.send(JSON.stringify(data));
+}
+function loadMyInfo(){
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "loadMyInfo",
+        accessToken: accessToken,
+        url : url
+    };
+    ws.send(JSON.stringify(data));
+}
+function clickRandIcon()
+{
+    if(iconIsDrag) return;
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "loadRandInfo",
+        accessToken: accessToken,
+        url : url //global var
+    };
+    ws.send(JSON.stringify(data));
+    startLoadingIcon(); /* in loader.js*/
+}
+function searchIdea(searchKey)
+{
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "searchIdea",
+        accessToken: accessToken,
+        searchKey : searchKey,
+        url : url //global var
+    };
+    ws.send(JSON.stringify(data));
+    startLoadingIcon(); /* in loader.js*/
+}
+function delIdea(idea_id)
+{
+    var id = parseId(idea_id);
+    var idea = currentPageIdeas[id]; /* currentPageIdeas set in showIdea.js*/
+    
+    // getCurrentUser is in login.js
+    var accessToken = getAccessToken();
+    var data = {
+        tar : "delIdea",
+        ideaId: idea.id,
+        accessToken : accessToken,
+        url : url //global var
+    };
+    console.log(data);
+    ws.send(JSON.stringify(data));
+    startLoadingIcon(); /* in loader.js*/
+}
+function fillIdeaBlock(title, description, owner, img, id){
+    var ideaBlock = document.getElementById(id);
+    console.log(id);
+    $(ideaBlock).empty();/*clear inside things*/
+    $(ideaBlock).css('display', 'block');
+    
+    var dom_title = document.createElement("div");
+    $(dom_title).text(title);
+    dom_title.className = "title";
+    ideaBlock.appendChild(dom_title); 
+    
+    var dom_owner = document.createElement("div");
+    dom_owner.className = "owner";
+    $(dom_owner).text(owner);
+    ideaBlock.appendChild(dom_owner);
+    
+    var dom_description = document.createElement("div");
+    dom_description.className = "description";
+    $(dom_description).text( description );
+    dom_description.style.display = "none";
+    ideaBlock.appendChild(dom_description);
+    
+    
+    var dom_img = document.createElement("img");
+    var el = ideaBlock;
+    var w = '100%';
+    var h = '100%';
+    dom_img.src = img;
+    dom_img.style.zIndex = -100;
+    dom_img.style.position = "absolute";
+    dom_img.style.top = "0";
+    dom_img.style.left = '0'; 
+    dom_img.style.width = w;
+    dom_img.style.height = h;
+    //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+    ideaBlock.appendChild(dom_img);
+    
+    var dom_filter = document.createElement("img");
+    w = '100%';
+    h = '100%';
+    dom_filter.style.zIndex = -99;
+    dom_filter.style.position = "absolute";
+    dom_filter.style.top = "0";
+    dom_filter.style.left = '0'; 
+    dom_filter.style.width = w;
+    dom_filter.style.height = h;
+    dom_filter.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%)";
+    //dom_img.style.filter = "brightness(0.7) saturate(0.5)";
+    ideaBlock.appendChild(dom_filter);
+    
+    //ideaBlocks[i].onmousedown = "createSmallImg("+ideaBlocks[i].id+","+img+")";
+    
+}
+
+
+var changeBlockEnable = 1;
+function nextBlock()
+{
+	if(changeBlockEnable){
+        var el = document.getElementById('disp');
+        var r = document.getElementById('click-r');
+        var l = document.getElementById('click-l');
+        var curLeft = parseInt(el.style.left);
+        var change = 0;
+        if( curLeft >= -70 ){
+            //el.style.left = parseInt(el.style.left) - 80 + '%';
+            change = 1;
+            changeBlockEnable = 0;
+        }
+        $(function(){
+            if(change==1)
+                $("#disp").animate({
+                    left: (curLeft-80) + '%'
+                },500, function(){
+                    changeBlockEnable = 1;
+                    if( curLeft-80 <= -150 )
+                        r.style.display = "none";
+                    else{
+                        r.style.display = "";
+                        l.style.display = "";
+                    }
+                });
+        });
+        console.log(el.style.left);
+    }
+}
+function preBlock()
+{
+	if(changeBlockEnable){
+        var el = document.getElementById('disp');
+        var r = document.getElementById('click-r');
+        var l = document.getElementById('click-l');
+        var curLeft = parseInt(el.style.left);
+        var change = 0;
+        if( curLeft <= -70 ){
+            //el.style.left = parseInt(el.style.left) + 80 + '%';
+            change = 1;
+            changeBlockEnable = 0;
+        }
+        $(function(){
+            if(change==1)
+                $("#disp").animate({
+                    left: (curLeft+80) + '%'
+                },500, function(){
+                    changeBlockEnable = 1;
+                    if(  curLeft+80 >= 10 )
+                        l.style.display = "none";
+                    else {
+                        r.style.display = "";
+                        l.style.display = "";
+                    }
+                });
+        });
+        console.log(el.style.left);
+	}
+}
+var enableCreateLarge = 1;
+function createLarge(id)
+{
+	del('tmpLarge'); /* in case that some still exist*/
+    if(enableCreateLarge==1){
+        divL = createLargeDiv(id);
+        enLargeChildImg(divL);
+        $(divL).children().css("display", "block");
+        makeDraggable();
+        currentDragId = id;
+    }
+}
+function enLargeChildImg(divL)
+{
+    var img = $("#"+divL.id).find("img");
+    img.css('width', divL.style.width);
+    img.css('height', divL.style.height);
+    img.css('filter', 'saturate(0.5) brightness(0.5)');
+    img.addClass('draggable');
+}
+function createLargeDiv(id)
+{
+    var el = document.getElementById(id);
+    var el2 = el.cloneNode(1);
+    var w = el.offsetWidth;
+    var h = el.offsetHeight;
+    el2.style.position = "absolute";
+    el2.style.left =  el.offsetLeft - 0.15*w + 'px';
+    el2.style.top = el.offsetTop - 0.15*h + 'px';
+    el2.style.width = w*1.3+ 'px';
+    el2.style.height = h*1.3 + 'px';
+    el2.className = "createLarge draggable";
+    el2.setAttribute("onmouseover", "");
+    el2.setAttribute("onmouseout", "del('tmpLarge');");
+    el2.id = "tmpLarge";
+
+    el.parentNode.appendChild(el2);
+    $('#tmpLarge').click(function(){
+        var tmpId = id.replace("idea_", "");
+        tmpId = parseInt(tmpId);
+        var idea = currentPageIdeas[tmpId];
+        window.displayAnIdea.location.href='anIdea.html?id='+idea.id;
+        showAnIdea();  // in anIdea_parent.js
+    });
+    return el2;
+}
+function del(id)
+{
+	var el = document.getElementById(id);
+	if(el!==null)   el.remove(); 
+}
+function createSmallImg(id, img)
+{
+    var dom_img = document.createElement("img");
+    var el = document.getElementById(id);
+    dom_img.src = img;
+    dom_img.style.zIndex = 100;
+    dom_img.style.position = "absolute";
+    dom_img.style.top = "0";
+    dom_img.style.left = '0'; 
+    dom_img.style.width = '50 px'; 
+    dom_img.style.height = '50 px';
+    dom_img.id = 'tmpSmallImg';
+    el.appendChild(dom_img);
+} 
+/* draggable */
+$( document ).ready(makeDraggable());
+function makeDraggable()
+{
+    var onMouseOut;
+    var dragEl;
+    $( ".draggable" ).draggable({
+      helper: function() {
+        var tmp;
+        console.log( "find img? : ", $(this).find('img') );
+        if( $(this).find('img').length>0 )
+            tmp =  $(this).find('img').clone();
+        else
+            tmp =  $(this).parent().find('img').clone();
+        $(tmp.get(0)).css('z-index', '1010');
+        $(tmp.get(1)).css('z-index', '1011');
+        tmp.css('width', '160px');
+        tmp.css('height', '120px');
+        dragEl = $("<div></div>").append(tmp);
+        $(this).parent().parent().append(dragEl);
+        console.log("dragEL:", $(dragEl));
+        del('tmpLarge');
+        return dragEl;
+      },
+      revert: "invalid",
+      cursor: "move",
+      cursorAt: { top: 30, left: 30 },
+      start: function(){
+            $('.backGray').css('display', 'block');
+            $('.droppable').css('display', 'block');
+            $('#trashCan').css('display', 'block');
+            $('#delLayer').css('display', 'block');
+            onMouseOut = $('.draggable').attr('onmouseout');
+            $('.draggable').attr('onmouseout', '');
+            console.log($('.dragImg').parent());
+            $('.icon').css('display', 'none');
+      },
+      drag: function(){
+      },
+      stop: function(){
+            $('.draggable').attr('onmouseout', onMouseOut);
+            $('.backGray').css('display', 'none');
+            $('.droppable').css('display', 'none');
+            $('#trashCan').css('display', 'none');
+            $('#delLayer').css('display', 'none');
+            $('.icon').css('display', 'block');
+      }
+    });
+    $('.droppable').droppable({
+        drop: function(){
+            $('.draggable').attr('onmouseout', onMouseOut);
+            $('.droppable').css('display', 'none');
+            $('#trashCan').css('display', 'none');
+            $('#delLayer').css('display', 'none');
+            if(currentDragId!==null){
+                bufferIdea(currentDragId); /* this function is in buffer.js*/
+            }
+            currentDragId = null;
+            //alert('dropped!');
+        }
+    });
+     $('#delLayer').droppable({
+        drop: function(){
+            alert('Deleted!');
+            $('.draggable').attr('onmouseout', onMouseOut);
+            $('.droppable').css('display', 'none');
+            $('#trashCan').css('display', 'none');
+            $('#delLayer').css('display', 'none');
+            if(currentDragId!==null){
+                delIdea(currentDragId); /* this function is in buffer.js*/
+                alert("Remove Your ownership from the idea! However, if the idea has been buffered ot put into walls, the idea wouldn't be really deleted but change the owner to 'public'");
+            } 
+            console.log('oaoa');
+            currentDragId = null;
+        }
+    });
+}

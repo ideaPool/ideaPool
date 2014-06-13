@@ -1,0 +1,33 @@
+#trashCan
+{
+    position: fixed;
+    opacity:0.8;
+    width: 50px;
+    height: 50px;
+    z-index: 10005;
+    left:3%;
+    bottom:48%;
+    background-color: rgba(1, 1, 1, 0) ;
+    display: none;
+    color: #F0F0F0 ;
+    border: solid;
+    border-color:#F0F0F0 ;
+    border-width: 1px;
+	border-radius: 50px;
+	z-index: 1005;
+}
+
+#delLayer
+{
+    position:fixed;
+    width: 10%;
+    height: 100%;
+    min-width: 100px;
+    min-height: 150 px;
+    bottom : 48%;
+    z-index:1001;
+    left:0%;
+    background-color: red;
+    opacity: 0;
+    display: none;
+}
